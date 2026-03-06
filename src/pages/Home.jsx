@@ -1,15 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
-import { useStandup } from '../hooks/useStandup.js';
-import { StandupCanvas } from './standup/StandupCanvas.jsx';
+import { BotHeroUnit } from '../components/BotHeroUnit.jsx';
 import './Home.css';
 
 export function Home() {
   const { t } = useTranslation();
   const { bots, loading } = useFleet();
-  const displayBots = loading ? STATIC_FLEET : bots;
-  const { phase, standupBots } = useStandup(displayBots);
+  const displayBots = (loading ? STATIC_FLEET : bots).slice(0, 4);
 
   return (
     <main className="home">
@@ -17,7 +15,7 @@ export function Home() {
       <section className="hero" aria-label="Bot Fleet Inc — Homepage Hero">
         <div className="hero__crt" aria-hidden="true" />
 
-        {/* Left column */}
+        {/* Left: brand copy */}
         <div className="hero__left">
           <div className="hero__content">
             <h1 className="hero__wordmark">Bot Fleet Inc</h1>
@@ -43,10 +41,12 @@ export function Home() {
           </div>
         </div>
 
-        {/* Right column — live bot landscape */}
+        {/* Right: bot grid — big sprites, live status */}
         <div className="hero__right">
-          <div className="hero__stage">
-            <StandupCanvas bots={standupBots} phase={phase} />
+          <div className="hero__bot-grid">
+            {displayBots.map(bot => (
+              <BotHeroUnit key={bot.name} bot={bot} />
+            ))}
           </div>
         </div>
 
@@ -55,7 +55,7 @@ export function Home() {
         </div>
       </section>
 
-      {/* ── About section ── */}
+      {/* ── About ── */}
       <section className="about" aria-label="About Bot Fleet Inc">
         <div className="about__inner">
           <div className="about__grid">
