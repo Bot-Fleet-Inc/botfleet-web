@@ -81,7 +81,14 @@ export default {
       return jsonError('Not found', 404, request);
     }
 
-    // Fall through to static assets
-    return env.ASSETS.fetch(request);
+    // Fall through to static assets — strip edge cache for HTML
+    const assetResponse = await env.ASSETS.fetch(request);
+    const ct = assetResponse.headers.get('content-type') || '';
+    if (ct.includes('text/html')) {
+      const newHeaders = new Headers(assetResponse.headers);
+      newHeaders.set('Cache-Control', 'no-store');
+      return new Response(assetResponse.body, { status: assetResponse.status, headers: newHeaders });
+    }
+    return assetResponse;
   },
 };
