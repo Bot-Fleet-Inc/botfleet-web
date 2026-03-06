@@ -1,0 +1,128 @@
+/* WEB-9: Standup canvas */
+
+.standup-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Grid background */
+.standup-canvas__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Standup circle */
+.standup-canvas__circle {
+  position: absolute;
+  border: 1px dashed rgba(0, 200, 100, 0.4);
+  border-radius: 50%;
+  background: rgba(0, 200, 100, 0.04);
+  animation: pulse-circle 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-circle {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1;   }
+}
+
+/* Design-bot notice */
+.standup-canvas__notice {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 9px;
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  font-family: var(--font-mono);
+  pointer-events: none;
+}
+
+/* ─── Bot avatar ─────────────────────────────────────────────────────── */
+
+.bot-avatar {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: default;
+  transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+              top  1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bot-avatar__sprite {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--bot-color, var(--color-border));
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  position: relative;
+  transition: border-color 0.3s;
+}
+
+.bot-avatar--active  .bot-avatar__sprite { border-color: #00c864; }
+.bot-avatar--blocked .bot-avatar__sprite { border-color: #ff4040; }
+.bot-avatar--idle    .bot-avatar__sprite { border-color: #ffaa00; }
+
+.bot-avatar__emoji {
+  line-height: 1;
+}
+
+.bot-avatar__name {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Status dot */
+.bot-avatar__dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--color-bg, #0d0d0d);
+}
+
+.bot-avatar__dot[data-status="active"]  { background: #00c864; }
+.bot-avatar__dot[data-status="blocked"] { background: #ff4040; }
+.bot-avatar__dot[data-status="idle"]    { background: #ffaa00; }
+.bot-avatar__dot[data-status="unknown"] { background: #888; }
+
+/* Issue bubble */
+.bot-avatar__issue {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1px 3px;
+  border-radius: 2px;
+  white-space: nowrap;
+  animation: fade-in-up 0.3s ease;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+}

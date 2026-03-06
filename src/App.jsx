@@ -8,6 +8,7 @@ import { BotProfile } from './pages/BotProfile.jsx'
 import { IntranetHome } from './pages/intranet/IntranetHome.jsx'
 import { EpicsTimeline } from './pages/intranet/EpicsTimeline.jsx'
 import { Status } from './pages/status/Status.jsx'
+import { StandupPage } from './pages/standup/StandupPage.jsx'
 import './App.css'
 
 function LoadingFallback() {
@@ -35,6 +36,9 @@ export default function App() {
             <Route path="/intranet/epics" element={<EpicsTimeline />} />
             {/* Status */}
             <Route path="/status" element={<Status />} />
+            {/* Standup */}
+            <Route path="/standup" element={<StandupPage />} />
+            <Route path="/intranet/standup" element={<StandupPage />} />
             {/* Fallback */}
             <Route path="*" element={<NotFound />} />
           </Routes>
