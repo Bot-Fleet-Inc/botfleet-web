@@ -1,57 +1,53 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { BotHeroUnit } from '../components/BotHeroUnit.jsx';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
+import { useStandup } from '../hooks/useStandup.js';
+import { StandupCanvas } from './standup/StandupCanvas.jsx';
 import './Home.css';
 
 export function Home() {
   const { t } = useTranslation();
   const { bots, loading } = useFleet();
-
-  // Show fleet row — use static fallback while loading
   const displayBots = loading ? STATIC_FLEET : bots;
+  const { phase, standupBots } = useStandup(displayBots);
 
   return (
     <main className="home">
       {/* ── Hero ── */}
       <section className="hero" aria-label="Bot Fleet Inc — Homepage Hero">
-        {/* CRT overlay */}
         <div className="hero__crt" aria-hidden="true" />
 
-        <div className="hero__content">
-          <h1 className="hero__wordmark">Bot Fleet Inc</h1>
-          <p className="hero__tagline">{t('hero.tagline')}</p>
-          <p className="hero__body">
-            {t('hero.body').split('\n').map((line, i) => (
-              <span key={i}>
-                {line}
-                {i === 0 && <br />}
-              </span>
-            ))}
-          </p>
-
-          <div className="hero__cta">
-            <Link to="/the-team" className="btn btn-primary">
-              {t('hero.cta_primary')}
-            </Link>
-            <a
-              href="https://github.com/Bot-Fleet-Inc/fleet-ops"
-              className="btn btn-secondary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('hero.cta_secondary')}
-            </a>
+        {/* Left column */}
+        <div className="hero__left">
+          <div className="hero__content">
+            <h1 className="hero__wordmark">Bot Fleet Inc</h1>
+            <p className="hero__tagline">{t('hero.tagline')}</p>
+            <p className="hero__body">
+              {t('hero.body').split('\n').map((line, i) => (
+                <span key={i}>{line}{i === 0 && <br />}</span>
+              ))}
+            </p>
+            <div className="hero__cta">
+              <Link to="/the-team" className="btn btn-primary">
+                {t('hero.cta_primary')}
+              </Link>
+              <a
+                href="https://github.com/Bot-Fleet-Inc/fleet-ops"
+                className="btn btn-secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('hero.cta_secondary')}
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Fleet row */}
-        <div className="hero__fleet-row" aria-label="The fleet" role="list">
-          {displayBots.map((bot) => (
-            <div role="listitem" key={bot.name}>
-              <BotHeroUnit bot={bot} />
-            </div>
-          ))}
+        {/* Right column — live bot landscape */}
+        <div className="hero__right">
+          <div className="hero__stage">
+            <StandupCanvas bots={standupBots} phase={phase} />
+          </div>
         </div>
 
         <div className="hero__footer-hint" aria-hidden="true">
@@ -88,14 +84,9 @@ export function Home() {
               </p>
             </div>
           </div>
-
           <div className="about__cta">
-            <Link to="/the-team" className="btn btn-primary">
-              Meet the team →
-            </Link>
-            <Link to="/updates" className="btn btn-secondary">
-              Recent updates →
-            </Link>
+            <Link to="/the-team" className="btn btn-primary">Meet the team →</Link>
+            <Link to="/updates" className="btn btn-secondary">Recent updates →</Link>
           </div>
         </div>
       </section>
