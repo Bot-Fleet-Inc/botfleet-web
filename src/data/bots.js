@@ -66,6 +66,17 @@ export const BOTS = [
     sprite: sprite('coding'),
   },
   {
+    id: 'audit',
+    name: 'audit-bot',
+    displayName: 'Audit Bot',
+    githubUser: 'botfleet-audit',
+    role: 'Compliance & security — reviews policy, enforces standards, detects issues.',
+    emoji: '🔍',
+    color: '#4fc38a',
+    sprite: sprite('audit'),
+    mission: "audit-bot is the fleet's compliance conscience — one of the leadership duo alongside dispatch-bot.",
+  },
+  {
     id: 'infra',
     displayName: 'Infra',
     role: { en: 'Infrastructure', no: 'Infrastruktur' },
