@@ -1,13 +1,18 @@
 /* HomePage — Hero + Team section */
 
 /* ═══════════════════════════════════════
-   HERO
+   HERO — Two-column layout
+   Left: brand copy | Right: StandupCanvas
 ═══════════════════════════════════════ */
 .hero {
   background: var(--color-bg);
   min-height: 100svh;
   display: grid;
-  grid-template-rows: 1fr auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "left right"
+    "footer footer";
   position: relative;
   overflow: hidden;
 }
@@ -28,6 +33,15 @@
   z-index: 0;
 }
 
+/* ─── Left column ─────────────────────── */
+.hero__left {
+  grid-area: left;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
 .hero__content {
   display: flex;
   flex-direction: column;
@@ -35,11 +49,26 @@
   justify-content: center;
   gap: var(--space-6);
   padding: var(--space-16) var(--space-10);
-  max-width: 700px;
+  max-width: 600px;
+}
+
+/* ─── Right column ────────────────────── */
+.hero__right {
+  grid-area: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
   position: relative;
   z-index: 1;
 }
 
+.hero__stage {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* ─── Copy styles ─────────────────────── */
 .hero__wordmark {
   font-family: var(--font-display);
   font-size: 28px;
@@ -107,75 +136,9 @@
   color: var(--color-text);
 }
 
-/* ─── Fleet row ────────────────────────── */
-.hero__fleet-row {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-8);
-  padding: var(--space-10) var(--space-10) var(--space-6);
-  overflow-x: auto;
-  scrollbar-width: none;
-  position: relative;
-  z-index: 1;
-}
-.hero__fleet-row::-webkit-scrollbar { display: none; }
-
-.hero__bot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: default;
-  flex-shrink: 0;
-}
-
-.hero__sprite {
-  width: 120px;
-  height: 150px;
-  display: block;
-  transition: transform 200ms ease;
-}
-.hero__bot:hover .hero__sprite { transform: translateY(-4px); }
-
-.hero__sprite-fallback {
-  width: 120px;
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 40px;
-  color: var(--bot-color, var(--color-text-dim));
-  opacity: 0.35;
-  border: 1px solid var(--color-border);
-}
-
-.hero__bot-name {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-dim);
-  text-align: center;
-  transition: color var(--transition-smooth);
-}
-.hero__bot:hover .hero__bot-name { color: var(--bot-color, var(--color-text)); }
-
-.hero__bot-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-dim);
-}
-
-.hero__status-dot { color: var(--bot-color, var(--color-text-dim)); }
-[data-status="online"]  .hero__status-dot { color: var(--color-status-online); }
-[data-status="working"] .hero__status-dot { color: var(--bot-color); animation: pulse 1.4s ease-in-out infinite; }
-
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
 /* ─── "Don't Panic" footer ─────────────── */
 .hero__footer-hint {
+  grid-area: footer;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--color-text-dim);
@@ -248,14 +211,10 @@
   .hero__content > *:nth-child(3) { animation-delay: 160ms; }
   .hero__content > *:nth-child(4) { animation-delay: 240ms; }
 
-  .hero__bot {
+  .hero__stage {
     animation: fadeSlideUp 0.5s ease both;
+    animation-delay: 300ms;
   }
-  .hero__bot:nth-child(1) { animation-delay: 300ms; }
-  .hero__bot:nth-child(2) { animation-delay: 360ms; }
-  .hero__bot:nth-child(3) { animation-delay: 420ms; }
-  .hero__bot:nth-child(4) { animation-delay: 480ms; }
-  .hero__bot:nth-child(5) { animation-delay: 540ms; }
 
   @keyframes fadeSlideUp {
     from { opacity: 0; transform: translateY(12px); }
@@ -266,20 +225,33 @@
 /* ═══════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════ */
+
+/* Tablet — narrow the canvas a bit */
 @media (max-width: 1023px) {
-  .hero__sprite { width: 96px; height: 120px; }
-  .hero__sprite-fallback { width: 96px; height: 120px; }
+  .hero__wordmark { font-size: 22px; }
+  .hero__content  { padding: var(--space-12) var(--space-8); }
+  .hero__right    { padding: var(--space-8); }
 }
 
+/* Mobile — stack columns */
 @media (max-width: 767px) {
+  .hero {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "right"
+      "footer";
+  }
+
   .hero__wordmark { font-size: 18px; }
   .hero__tagline  { font-size: 9px; }
   .hero__content  { padding: var(--space-10) var(--space-6); }
-  .hero__fleet-row { padding: var(--space-6) var(--space-4); gap: var(--space-5); }
+  .hero__right    { padding: var(--space-4) var(--space-6) var(--space-6); }
   .team-section   { padding: var(--space-10) var(--space-4); }
   .team-grid      { grid-template-columns: 1fr; }
 }
 
+/* Very small — hide canvas entirely */
 @media (max-width: 480px) {
-  .hero__fleet-row { display: none; }
+  .hero__right { display: none; }
 }
