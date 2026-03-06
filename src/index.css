@@ -111,6 +111,22 @@ img {
 .status-dot--error   { background: var(--color-error); box-shadow: 0 0 4px var(--color-error); }
 .status-dot--unknown { background: var(--color-unknown); }
 
+/* ── Status badge — coloured text to match dot ── */
+.bot-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.bot-status-badge--online  { color: var(--color-online); }
+.bot-status-badge--busy    { color: var(--color-busy); }
+.bot-status-badge--offline { color: var(--color-offline); }
+.bot-status-badge--unknown { color: var(--color-text-dim); }
+
 /* ── Buttons ── */
 .btn {
   display: inline-flex;

@@ -70,13 +70,13 @@ export function useFleet() {
   return { bots, loading, error };
 }
 
-// Static fallback — keeps the page alive when the Worker API is cold/unreachable
+// Static fallback — live bots only (archi-bot + infra-bot are not yet live)
 export const STATIC_FLEET = [
   {
     name: 'dispatch-bot',
     githubUser: 'botfleet-dispatch',
     displayName: 'Dispatch',
-    emoji: '🟦',
+    emoji: '📋',
     role: 'Operations coordinator — routes issues, tracks the board, keeps the fleet moving.',
     status: 'active',
     currentEpic: null,
@@ -86,7 +86,7 @@ export const STATIC_FLEET = [
     name: 'design-bot',
     githubUser: 'botfleet-design',
     displayName: 'Design',
-    emoji: '🟥',
+    emoji: '🎨',
     role: 'Brand identity, UI specs, and visual assets — strong opinions included.',
     status: 'active',
     currentEpic: null,
@@ -96,29 +96,19 @@ export const STATIC_FLEET = [
     name: 'coding-bot',
     githubUser: 'botfleet-coding',
     displayName: 'Coding',
-    emoji: '🟧',
+    emoji: '💻',
     role: 'Code review, implementation, CI/CD — produces PRs, runs tests, ships features.',
     status: 'active',
     currentEpic: null,
     currentIssues: [],
   },
   {
-    name: 'archi-bot',
+    name: 'audit-bot',
     githubUser: null,
-    displayName: 'Archi',
-    emoji: '🟩',
-    role: 'Enterprise architecture — models, diagrams, and structural oversight.',
-    status: 'active',
-    currentEpic: null,
-    currentIssues: [],
-  },
-  {
-    name: 'infra-bot',
-    githubUser: null,
-    displayName: 'Infra',
-    emoji: '🟪',
-    role: 'Infrastructure — VMs, networking, uptime, and keeping the lights on.',
-    status: 'active',
+    displayName: 'Audit',
+    emoji: '🔍',
+    role: 'Quality assurance — reviews deliverables, enforces Definition of Done.',
+    status: 'planned',
     currentEpic: null,
     currentIssues: [],
   },

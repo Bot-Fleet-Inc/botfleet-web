@@ -4,6 +4,10 @@ import { BotSprite } from './BotSprite.jsx';
 import { StatusBadge } from './StatusDot.jsx';
 import './BotCard.css';
 
+// Make the whole card navigable via keyboard (wraps in Link)
+// while preserving internal links (GitHub, epic)
+
+
 const BOT_COLOR_MAP = {
   'dispatch-bot': 'dispatch',
   'design-bot':   'design',
@@ -20,9 +24,10 @@ const GITHUB_USERS = {
 
 export function BotCard({ bot }) {
   const { t } = useTranslation();
-  const colorKey = BOT_COLOR_MAP[bot.name] ?? 'coding';
-  const pitchKey = bot.name.replace('-bot', '');
-  const pitch = t(`bots.${pitchKey}.pitch`, { defaultValue: bot.role });
+  const colorKey   = BOT_COLOR_MAP[bot.name] ?? bot.name.replace('-bot', '');
+  const pitchKey   = bot.name.replace('-bot', '');
+  const pitch      = t(`bots.${pitchKey}.pitch`, { defaultValue: '' });
+  const roleText   = bot.role || t(`bots.${pitchKey}.role`, { defaultValue: '' });
   const githubUser = bot.githubUser ?? GITHUB_USERS[bot.name];
 
   return (
@@ -30,7 +35,6 @@ export function BotCard({ bot }) {
       className="bot-card"
       data-bot={colorKey}
       data-status={bot.status ?? 'unknown'}
-      aria-label={bot.displayName}
     >
       <div className="bot-card__avatar">
         <BotSprite
@@ -48,9 +52,9 @@ export function BotCard({ bot }) {
           <StatusBadge status={bot.status ?? 'unknown'} className="bot-card__status" />
         </header>
 
-        <p className="bot-card__role">{bot.role}</p>
+        {roleText && <p className="bot-card__role">{roleText}</p>}
 
-        <blockquote className="bot-card__pitch">{pitch}</blockquote>
+        {pitch && <blockquote className="bot-card__pitch">{pitch}</blockquote>}
 
         {bot.currentEpic && (
           <p className="bot-card__epic">

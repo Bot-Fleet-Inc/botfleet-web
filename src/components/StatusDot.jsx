@@ -1,41 +1,48 @@
 import { useTranslation } from 'react-i18next';
 
+// Normalise any status string → canonical key
 const STATUS_MAP = {
-  active:       'online',
-  online:       'online',
-  Provisioning: 'busy',
-  'in-progress':'busy',
-  inactive:     'offline',
-  offline:      'offline',
-  planned:      'unknown',
+  active:        'online',
+  online:        'online',
+  idle:          'online',
+  working:       'busy',
+  'in-progress': 'busy',
+  Provisioning:  'busy',
+  loading:       'busy',
+  inactive:      'offline',
+  offline:       'offline',
+  planned:       'unknown',
+  unknown:       'unknown',
 };
 
-function resolveClass(status) {
-  const key = STATUS_MAP[status] ?? 'unknown';
-  return `status-dot status-dot--${key}`;
+export function resolveStatus(status) {
+  return STATUS_MAP[status] ?? 'unknown';
 }
 
 export function StatusDot({ status }) {
-  return <span className={resolveClass(status)} aria-hidden="true" />;
+  const key = resolveStatus(status);
+  return <span className={`status-dot status-dot--${key}`} aria-hidden="true" />;
 }
 
 export function StatusBadge({ status, className = '' }) {
   const { t } = useTranslation();
+  const key = resolveStatus(status);
 
   const labelMap = {
-    active:        t('status.online'),
-    online:        t('status.online'),
-    Provisioning:  t('status.inProgress'),
-    'in-progress': t('status.busy'),
-    inactive:      t('status.offline'),
-    offline:       t('status.offline'),
-    planned:       t('status.planned'),
+    online:  t('status.online'),
+    busy:    t('status.busy'),
+    offline: t('status.offline'),
+    unknown: t('status.unknown'),
   };
 
-  const label = labelMap[status] ?? t('status.unknown');
+  const label = labelMap[key] ?? t('status.unknown');
 
   return (
-    <span className={`bot-status-badge ${className}`} aria-label={label}>
+    <span
+      className={`bot-status-badge bot-status-badge--${key} ${className}`}
+      aria-label={label}
+      data-status={key}
+    >
       <StatusDot status={status} />
       {label}
     </span>
