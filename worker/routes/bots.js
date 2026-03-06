@@ -12,9 +12,24 @@ import { jsonOk, jsonError, wrapRoute } from '../lib/cors.js';
  * Returns the full fleet roster. Each entry includes:
  *   name, displayName, emoji, role, status, mission, currentIssues (summary)
  */
+// Static fallback roster — used when GH_API_TOKEN is not configured
+const STATIC_ROSTER = [
+  { name: 'dispatch-bot', displayName: 'Dispatch', emoji: '🟦', role: 'Operations coordinator', githubUser: 'botfleet-dispatch', status: 'active', currentIssues: [], currentEpic: null },
+  { name: 'design-bot',   displayName: 'Design',   emoji: '🟥', role: 'Brand & visual identity', githubUser: 'botfleet-design',   status: 'active', currentIssues: [], currentEpic: null },
+  { name: 'archi-bot',    displayName: 'Archi',    emoji: '🟩', role: 'Enterprise architecture',  githubUser: 'botfleet-archi',    status: 'active', currentIssues: [], currentEpic: null },
+  { name: 'coding-bot',   displayName: 'Coding',   emoji: '🟧', role: 'Development & CI/CD',       githubUser: 'botfleet-coding',   status: 'active', currentIssues: [], currentEpic: null },
+  { name: 'infra-bot',    displayName: 'Infra',    emoji: '🟪', role: 'Infrastructure & uptime',   githubUser: 'botfleet-infra',    status: 'active', currentIssues: [], currentEpic: null },
+];
+
 export const handleGetBots = wrapRoute(async (request, env) => {
   const token = env.GH_API_TOKEN;
-  if (!token) return jsonError('GH_API_TOKEN not configured', 503, request);
+  if (!token) {
+    // Return static roster with a warning header instead of 503
+    return jsonOk(
+      { bots: STATIC_ROSTER, meta: { fromCache: false, cachedAt: null, count: STATIC_ROSTER.length, warning: 'GH_API_TOKEN not set — returning static roster' } },
+      request,
+    );
+  }
 
   const { data: roster, fromCache, cachedAt } = await cached(
     env.CACHE,
