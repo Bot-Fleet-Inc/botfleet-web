@@ -6,6 +6,7 @@
  */
 
 import { jsonOk, jsonError, wrapRoute } from '../lib/cors.js';
+import { generateVoicePost, getBotProfile } from '../lib/botvoice.js';
 
 const PAGE_SIZE = 20;
 
@@ -201,19 +202,30 @@ function webhookToPost(event, payload) {
   const actor  = payload.sender?.login         ?? 'unknown';
   const avatar = payload.sender?.avatar_url    ?? null;
 
+  // Enrich actor with bot profile if known
+  const botProfile = getBotProfile(actor);
+  const actorDisplay = botProfile ? `${botProfile.emoji} ${botProfile.name}` : actor;
+
   if (event === 'issues') {
     const action = payload.action;
     if (!['opened', 'closed', 'reopened'].includes(action)) return null;
 
     const issue = payload.issue;
+    const eventType = `issue_${action}`;
+    const voiceBody = generateVoicePost(actor, eventType, {
+      number: issue.number,
+      title:  issue.title,
+      repo,
+    });
+
     return {
       githubEventId: `issue-${issue.number}`,
-      eventType:     `issue_${action}`,
+      eventType,
       repo,
-      actor,
+      actor: actorDisplay,
       actorAvatar:   avatar,
       title:         issue.title,
-      body:          issue.body ?? '',
+      body:          voiceBody ?? issue.body ?? '',
       url:           issue.html_url,
       labels:        (issue.labels ?? []).map((l) => l.name),
       createdAt:     issue.created_at,
@@ -250,16 +262,22 @@ function webhookToPost(event, payload) {
     const action = payload.action;
     if (!['opened', 'closed'].includes(action)) return null;
 
-    const pr       = payload.pull_request;
+    const pr        = payload.pull_request;
     const eventType = action === 'closed' && pr.merged ? 'pr_merged' : `pr_${action}`;
+    const voiceBody = generateVoicePost(actor, eventType, {
+      number: pr.number,
+      title:  pr.title,
+      repo,
+    });
+
     return {
       githubEventId: `pr-${pr.number}`,
       eventType,
       repo,
-      actor,
+      actor: actorDisplay,
       actorAvatar:  avatar,
       title:        pr.title,
-      body:         pr.body ?? '',
+      body:         voiceBody ?? pr.body ?? '',
       url:          pr.html_url,
       labels:       (pr.labels ?? []).map((l) => l.name),
       createdAt:    pr.created_at,

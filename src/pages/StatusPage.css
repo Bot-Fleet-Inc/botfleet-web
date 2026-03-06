@@ -1,0 +1,177 @@
+/* StatusPage — fleet health dashboard */
+
+.status-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ─── Header ───────────────────────────── */
+.status-page__header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.status-page__title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.status-page__overall-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-page__overall-dot--ok    { background: var(--color-status-online); box-shadow: 0 0 6px var(--color-status-online); }
+.status-page__overall-dot--warn  { background: var(--color-status-busy); }
+.status-page__overall-dot--error { background: var(--color-status-error); box-shadow: 0 0 6px var(--color-status-error); }
+
+.status-page__sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin: 0;
+}
+
+.status-page__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.status-page__checked {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  opacity: 0.6;
+}
+
+.status-page__refresh {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-dim);
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-smooth), border-color var(--transition-smooth);
+}
+.status-page__refresh:hover { color: var(--color-coding); border-color: var(--color-coding); }
+
+.status-page__loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-10);
+}
+
+/* ─── Section ───────────────────────────── */
+.status-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.status-section__title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.status-section__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ─── Status Row ────────────────────────── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.status-row__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-row--ok      .status-row__dot { background: var(--color-status-online); }
+.status-row--warn    .status-row__dot { background: var(--color-status-busy); animation: pulse 2s ease-in-out infinite; }
+.status-row--error   .status-row__dot { background: var(--color-status-error); animation: pulse 1s ease-in-out infinite; }
+.status-row--unknown .status-row__dot { background: var(--color-border); }
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.status-row__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-row__label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.status-row__detail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+}
+
+.status-row__badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.status-row--ok      .status-row__badge { color: var(--color-status-online); border: 1px solid var(--color-status-online); }
+.status-row--warn    .status-row__badge { color: var(--color-status-busy);   border: 1px solid var(--color-status-busy);   }
+.status-row--error   .status-row__badge { color: var(--color-status-error);  border: 1px solid var(--color-status-error);  }
+.status-row--unknown .status-row__badge { color: var(--color-text-dim);      border: 1px solid var(--color-border);        }
+
+/* ─── Error ─────────────────────────────── */
+.status-page__error {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  background: var(--color-surface);
+  border: 1px solid var(--color-status-error);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+.status-page__error p { margin: 0 0 var(--space-2) 0; }
+.status-page__error p:last-child { margin: 0; }
+
+/* ─── Responsive ────────────────────────── */
+@media (max-width: 640px) {
+  .status-page { padding: var(--space-6) var(--space-4); }
+}
