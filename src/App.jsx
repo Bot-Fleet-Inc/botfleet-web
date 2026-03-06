@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Suspense } from 'react'
 import { Navbar } from './components/Navbar.jsx'
-import { Home } from './pages/Home.jsx'
+import { HQRoom } from './pages/HQRoom.jsx'
 import { TheTeam } from './pages/TheTeam.jsx'
 import { Updates } from './pages/Updates.jsx'
 import { BotProfile } from './pages/BotProfile.jsx'
@@ -19,14 +19,27 @@ function LoadingFallback() {
   )
 }
 
+/**
+ * Conditionally renders the global Navbar.
+ * Hidden on the homepage — the HQRoom has its own embedded nav
+ * (logo + tagline live inside the room per WEB-10 spec).
+ */
+function ConditionalNavbar() {
+  const { pathname } = useLocation()
+  if (pathname === '/') return null
+  return <Navbar />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <div className="app">
-        <Navbar />
+        <ConditionalNavbar />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/" element={<Home />} />
+            {/* WEB-10: Full-page 2D HQ landscape — no external navbar,
+                logo sign + tagline live inside the room */}
+            <Route path="/" element={<HQRoom />} />
             <Route path="/the-team" element={<TheTeam />} />
             <Route path="/updates" element={<Updates />} />
             <Route path="/bots/:name" element={<BotProfile />} />

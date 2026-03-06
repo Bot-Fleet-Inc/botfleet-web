@@ -4,6 +4,13 @@
   flex-direction: column;
 }
 
+/* Non-homepage pages grow to fill remaining height after Navbar */
 .app > *:last-child {
   flex: 1;
+}
+
+/* Homepage (HQRoom) takes over full viewport — override app flex */
+.hq-scene {
+  /* Pulled out of flex flow so it fills the viewport cleanly */
+  flex: none;
 }
