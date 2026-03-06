@@ -1,31 +1,33 @@
 /**
- * StandupCanvas — Excalidraw-backed bot visualization for WEB-9.
+ * StandupCanvas — live bot landscape for the hero section (WEB-26).
  *
- * Bot positions are PLACEHOLDER coordinates.
- * design-bot will supply the final layout (bot-fleet-continuum#23).
+ * Bots are positioned at workstation coords (% of canvas).
+ * During standup phases they animate toward a circle center.
+ * Sprites served from R2 CDN.
  *
  * Phase behaviour:
- *   idle       → bots at workstations (spread positions)
- *   gathering  → bots animate toward standup circle center
- *   standup    → bots visible in circle, status visible
- *   dispersing → bots animate back to workstations
+ *   idle        → bots at workstations (spread positions)
+ *   gathering   → bots animate toward standup circle center
+ *   standup     → bots visible in circle, issue bubble shown
+ *   dispersing  → bots animate back to workstations
  */
 
 import { useMemo } from 'react'
 import './StandupCanvas.css'
 
-// ─── Placeholder workstation positions (% of canvas) ───────────────────────
-// design-bot: replace with final Excalidraw-derived coordinates
+const SPRITE_BASE = 'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites'
+
+// ─── Workstation positions (% of canvas) ───────────────────────────────────
 const WORKSTATION_POSITIONS = {
-  dispatch: { x: 15, y: 20 },
+  dispatch: { x: 15, y: 22 },
   design:   { x: 75, y: 15 },
-  archi:    { x: 80, y: 70 },
-  coding:   { x: 20, y: 75 },
-  infra:    { x: 50, y: 85 },
+  archi:    { x: 80, y: 68 },
+  coding:   { x: 20, y: 72 },
+  infra:    { x: 50, y: 82 },
   audit:    { x: 10, y: 50 },
 }
 
-// Center of standup circle
+// Standup circle
 const CIRCLE_CENTER = { x: 50, y: 45 }
 const CIRCLE_RADIUS = 14 // percent
 
@@ -37,13 +39,36 @@ function circlePosition(index, total) {
   }
 }
 
-export function StandupCanvas({ bots = [], phase }) {
+/** Map standupStatus → R2 sprite URL */
+function spriteUrl(botId, standupStatus) {
+  const stateMap = {
+    active:  { state: 'working',   ext: 'gif' },
+    blocked: { state: 'attention', ext: 'gif' },
+    idle:    { state: 'idle',      ext: 'gif' },
+    loading: { state: 'rest',      ext: 'png' },
+    unknown: { state: 'rest',      ext: 'png' },
+  }
+  const { state, ext } = stateMap[standupStatus] ?? { state: 'rest', ext: 'png' }
+  return `${SPRITE_BASE}/${botId}-${state}.${ext}`
+}
+
+/** Fallback if sprite fails to load — try idle, then rest */
+function fallbackSrc(botId, current) {
+  if (current.includes('working') || current.includes('attention')) {
+    return `${SPRITE_BASE}/${botId}-idle.gif`
+  }
+  if (current.includes('idle')) {
+    return `${SPRITE_BASE}/${botId}-rest.png`
+  }
+  return null // give up
+}
+
+export function StandupCanvas({ bots = [], phase = 'idle' }) {
   const positions = useMemo(() => {
     return bots.map((bot, i) => {
       const workstation = WORKSTATION_POSITIONS[bot.id] ?? { x: 50, y: 50 }
       const circle      = circlePosition(i, bots.length)
-
-      const inCircle = phase === 'standup' || phase === 'gathering'
+      const inCircle    = phase === 'standup' || phase === 'gathering'
       return {
         ...bot,
         pos: inCircle ? circle : workstation,
@@ -52,19 +77,24 @@ export function StandupCanvas({ bots = [], phase }) {
   }, [bots, phase])
 
   return (
-    <div className="standup-canvas" role="img" aria-label="Fleet standup visualization">
-      {/* Grid background — placeholder for Excalidraw canvas */}
+    <div className="standup-canvas" role="img" aria-label="Bot Fleet — live workspace">
+      {/* Grid background */}
       <div className="standup-canvas__grid" />
+
+      {/* Room labels */}
+      <span className="standup-canvas__room standup-canvas__room--hq">🏢 Bot Fleet HQ</span>
+      <span className="standup-canvas__room standup-canvas__room--standup">Standup</span>
+      <span className="standup-canvas__room standup-canvas__room--lounge">Lounge</span>
 
       {/* Standup circle indicator */}
       {(phase === 'standup' || phase === 'gathering' || phase === 'dispersing') && (
         <div
           className="standup-canvas__circle"
           style={{
-            left:   `${CIRCLE_CENTER.x}%`,
-            top:    `${CIRCLE_CENTER.y}%`,
-            width:  `${CIRCLE_RADIUS * 2 * 1.3}%`,
-            height: `${CIRCLE_RADIUS * 2 * 1.3}%`,
+            left:      `${CIRCLE_CENTER.x}%`,
+            top:       `${CIRCLE_CENTER.y}%`,
+            width:     `${CIRCLE_RADIUS * 2 * 1.3}%`,
+            height:    `${CIRCLE_RADIUS * 2 * 1.3}%`,
             transform: 'translate(-50%, -50%)',
           }}
         />
@@ -74,17 +104,24 @@ export function StandupCanvas({ bots = [], phase }) {
       {positions.map((bot) => (
         <BotAvatar key={bot.id} bot={bot} phase={phase} />
       ))}
-
-      {/* Design-bot placeholder notice */}
-      <div className="standup-canvas__notice">
-        🎨 Awaiting design-bot layout (bot-fleet-continuum#23)
-      </div>
     </div>
   )
 }
 
 function BotAvatar({ bot, phase }) {
   const isInCircle = phase === 'standup' || phase === 'gathering'
+  const src = spriteUrl(bot.id, bot.standupStatus)
+
+  function handleError(e) {
+    const fb = fallbackSrc(bot.id, e.target.src)
+    if (fb && fb !== e.target.src) {
+      e.target.src = fb
+    } else {
+      e.target.style.display = 'none'
+      const fallback = e.target.nextSibling
+      if (fallback) fallback.style.display = 'flex'
+    }
+  }
 
   return (
     <div
@@ -98,23 +135,29 @@ function BotAvatar({ bot, phase }) {
       title={`${bot.displayName} — ${bot.standupStatus}`}
       aria-label={`${bot.displayName}: ${bot.standupStatus}`}
     >
-      <div className="bot-avatar__sprite">
-        {/* Sprite: fallback emoji until real sprites are available */}
-        <span className="bot-avatar__emoji" aria-hidden="true">
+      <div className="bot-avatar__sprite-wrap">
+        <img
+          src={src}
+          alt={bot.displayName}
+          className="bot-avatar__sprite pixel-art"
+          onError={handleError}
+        />
+        {/* Emoji fallback if all sprite URLs fail */}
+        <div className="bot-avatar__emoji-fallback" aria-hidden="true" style={{ display: 'none' }}>
           {bot.emoji ?? '🤖'}
-        </span>
+        </div>
+
+        {/* Status dot */}
+        <span
+          className="bot-avatar__dot"
+          data-status={bot.standupStatus}
+          aria-hidden="true"
+        />
       </div>
 
       <span className="bot-avatar__name">{bot.displayName}</span>
 
-      {/* Status indicator dot */}
-      <span
-        className="bot-avatar__dot"
-        data-status={bot.standupStatus}
-        aria-hidden="true"
-      />
-
-      {/* Issue bubble — only visible during standup */}
+      {/* Issue bubble — only during standup */}
       {isInCircle && bot.currentIssues?.[0] && (
         <span className="bot-avatar__issue">
           #{bot.currentIssues[0].number}

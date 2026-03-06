@@ -5,10 +5,10 @@
 import { useState, useEffect } from 'react'
 import { BOTS } from '../data/bots.js'
 
-const POLL_INTERVAL = 5 * 60 * 1000 // 5 min — synced with standup cron
+const POLL_INTERVAL = 30 * 1000 // 30s — live refresh for homepage hero
 
 export function useBots() {
-  const [bots, setBots] = useState(BOTS.map(b => ({ ...b, status: 'loading' })))
+  const [bots, setBots] = useState(BOTS.map(b => ({ ...b, status: 'loading', currentIssues: [] })))
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
 
@@ -20,19 +20,22 @@ export function useBots() {
 
       setBots(BOTS.map(bot => {
         const live = data.bots?.find(b => b.id === bot.id || b.githubUser === bot.githubUser)
+        const currentIssues = live?.currentIssues ?? []
         return {
           ...bot,
           status: live?.status ?? 'offline',
           currentEpic: live?.currentEpic ?? null,
-          currentIssue: live?.currentIssue ?? null,
+          currentIssues,
+          currentIssue: currentIssues[0] ?? null,
         }
       }))
       setLastUpdated(new Date())
       setError(null)
     } catch (err) {
       setError(err.message)
-      // Keep previous data, just mark status unknown
-      setBots(prev => prev.map(b => b.status === 'loading' ? { ...b, status: 'offline' } : b))
+      setBots(prev => prev.map(b =>
+        b.status === 'loading' ? { ...b, status: 'offline', currentIssues: [] } : b
+      ))
     }
   }
 
