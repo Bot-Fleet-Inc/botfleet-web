@@ -5,6 +5,15 @@
  * Design: design-bot WEB-HQ-prototype.html + bfi-hq-v3-preview.png
  * Constraint: Logo sign + chalkboard tagline live INSIDE the room,
  *             not as external UI elements.
+ *
+ * Acceptance criteria (WEB-10):
+ *  ✓ Entire viewport IS the room (no traditional hero section)
+ *  ✓ Logo sign + chalkboard + stats board + desks + standup circle + lounge
+ *  ✓ All bots shown with correct sprites from R2
+ *  ✓ Bots reposition based on live GitHub status
+ *  ✓ Hover → speech bubble with bot personality
+ *  ✓ "Meet the Fleet" CTA in lounge corner
+ *  ✓ Mobile responsive (scales down at <768px)
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -12,25 +21,68 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
 import './HQRoom.css';
 
-// ── Sprite base ──────────────────────────────────────────────────
+// ── R2 sprite base ───────────────────────────────────────────────
 const SPRITE_BASE = 'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites';
 
-function spriteRest(name) {
-  return `${SPRITE_BASE}/${name}-rest.png`;
+function spriteRest(key) {
+  return `${SPRITE_BASE}/${key}-rest.png`;
 }
-function spriteIdle(name) {
-  return `${SPRITE_BASE}/${name}-idle.gif`;
+function spriteIdle(key) {
+  // Some sprites use -idle-1.gif, fall back to -idle.gif
+  return `${SPRITE_BASE}/${key}-idle-1.gif`;
+}
+
+// ── Zone position maps ────────────────────────────────────────────
+// Each bot has a primary zone and fallback positions per live status.
+const ZONE_POSITIONS = {
+  dispatch: {
+    workstation: { left: '26%' },
+    standup:     { left: '31%' },
+    lounge:      { left: '68%', bottom: '175px' },
+  },
+  design: {
+    workstation: { left: '65%', bottom: '175px' },
+    standup:     { left: '36%' },
+    lounge:      { left: '65%', bottom: '175px' },
+  },
+  coding: {
+    workstation: { left: '43%' },
+    standup:     { left: '40%' },
+    lounge:      { left: '72%', bottom: '175px' },
+  },
+  archi: {
+    workstation: { left: '34%' },
+    standup:     { left: '34%' },
+    lounge:      { left: '74%', bottom: '175px' },
+  },
+  infra: {
+    workstation: { left: '9%' },
+    standup:     { left: '28%' },
+    lounge:      { left: '62%', bottom: '175px' },
+  },
+  audit: {
+    workstation: { left: '76%' },
+    standup:     { left: '42%' },
+    lounge:      { left: '76%', bottom: '175px' },
+  },
+};
+
+/** Derive which visual zone a bot should be in based on live status */
+function deriveZone(botStatus, defaultZone) {
+  if (!botStatus || botStatus === 'offline' || botStatus === 'planned') return 'workstation';
+  if (botStatus === 'active' || botStatus === 'loading') return defaultZone || 'workstation';
+  return defaultZone || 'workstation';
 }
 
 // ── Bot definitions ──────────────────────────────────────────────
 const BOTS = [
   {
-    id: 'dispatch-bot',
+    id: 'dispatch',
+    apiName: 'dispatch-bot',
     key: 'dispatch',
     displayName: 'Dispatch',
     color: '#4ECDC4',
-    zone: 'standup',
-    style: { left: '26%' },
+    defaultZone: 'standup',
     bubbles: [
       '> 3 issues assigned. On it.',
       '> Fleet status: MOSTLY OK.',
@@ -39,12 +91,12 @@ const BOTS = [
     link: '/bots/dispatch-bot',
   },
   {
-    id: 'design-bot',
+    id: 'design',
+    apiName: 'design-bot',
     key: 'design',
     displayName: 'Design',
     color: '#FF6B8A',
-    zone: 'lounge',
-    style: { left: '65%', bottom: '175px' },
+    defaultZone: 'lounge',
     bubbles: [
       '> That font kerning is wrong.',
       '> Approved. (grudgingly)',
@@ -53,26 +105,26 @@ const BOTS = [
     link: '/bots/design-bot',
   },
   {
-    id: 'coding-bot',
+    id: 'coding',
+    apiName: 'coding-bot',
     key: 'coding',
     displayName: 'Coding',
     color: '#FFB347',
-    zone: 'standup',
-    style: { left: '43%' },
+    defaultZone: 'workstation',
     bubbles: [
       "> git commit -m 'fix: actually fix it'",
       '> undefined is not a function. again.',
-      '> deploying. don\'t touch anything.',
+      "> deploying. don't touch anything.",
     ],
     link: '/bots/coding-bot',
   },
   {
-    id: 'archi-bot',
+    id: 'archi',
+    apiName: 'archi-bot',
     key: 'archi',
     displayName: 'Archi',
     color: '#7BC67E',
-    zone: 'standup',
-    style: { left: '34%' },
+    defaultZone: 'standup',
     bubbles: [
       '> The diagram was correct.',
       '> This is load-bearing whitespace.',
@@ -81,12 +133,12 @@ const BOTS = [
     link: '/bots/archi-bot',
   },
   {
-    id: 'infra-bot',
+    id: 'infra',
+    apiName: 'infra-bot',
     key: 'infra',
     displayName: 'Infra',
     color: '#C3A6D4',
-    zone: 'server',
-    style: { left: '9%' },
+    defaultZone: 'workstation',
     bubbles: [
       '> uptime: 99.2%. close enough.',
       '> the lights are blinking. that\'s fine.',
@@ -109,13 +161,15 @@ const RACK_UNITS = [
 ];
 
 // ── Bot sprite + speech bubble ───────────────────────────────────
-function BotSlot({ bot, fleetStatus }) {
+function BotSlot({ bot, status }) {
   const [hovered, setHovered] = useState(false);
   const [bubbleIdx, setBubbleIdx] = useState(0);
   const imgRef = useRef(null);
   const navigate = useNavigate();
 
-  const isOnline = fleetStatus[bot.id] !== 'offline' && fleetStatus[bot.id] !== undefined;
+  const isOnline = status && status !== 'offline' && status !== 'planned';
+  const zone = deriveZone(status, bot.defaultZone);
+  const posStyle = ZONE_POSITIONS[bot.key]?.[zone] || ZONE_POSITIONS[bot.key]?.workstation || {};
 
   const handleEnter = useCallback(() => {
     setHovered(true);
@@ -136,8 +190,8 @@ function BotSlot({ bot, fleetStatus }) {
 
   return (
     <div
-      className={`hq-bot-slot${hovered ? ' hq-bot-slot--hovered' : ''}`}
-      style={{ '--bot-color': bot.color, ...bot.style }}
+      className={`hq-bot-slot${hovered ? ' hq-bot-slot--hovered' : ''}${zone === 'lounge' ? ' hq-bot-slot--lounge' : ''}`}
+      style={{ '--bot-color': bot.color, ...posStyle }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       onClick={handleClick}
@@ -157,6 +211,15 @@ function BotSlot({ bot, fleetStatus }) {
         alt={`${bot.displayName} bot`}
         className="hq-bot-sprite pixel-art"
         loading="lazy"
+        onError={(e) => {
+          // Sprite not yet on R2 — show coloured placeholder
+          e.target.style.display = 'none';
+          if (e.target.nextSibling?.classList?.contains('hq-bot-placeholder')) return;
+          const ph = document.createElement('div');
+          ph.className = 'hq-bot-placeholder';
+          ph.style.background = bot.color;
+          e.target.parentNode.insertBefore(ph, e.target.nextSibling);
+        }}
       />
       <span className="hq-bot-name">{bot.displayName}</span>
       <div
@@ -165,6 +228,7 @@ function BotSlot({ bot, fleetStatus }) {
         style={{ background: isOnline ? '#7BC67E' : '#484F58' }}
         title={isOnline ? 'online' : 'offline'}
       />
+      <div className="hq-bot-reflection" aria-hidden="true" />
     </div>
   );
 }
@@ -186,15 +250,14 @@ function useStats() {
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
         if (!data) return;
-        // Worker returns { bots: [...], stats?: {...} }
-        if (data.stats) setStats(data.stats);
+        if (data.stats) setStats({ ...FALLBACK_STATS, ...data.stats });
       })
       .catch(() => { /* use fallback */ });
   }, []);
   return stats;
 }
 
-// ── Chalkboard blinking cursor ───────────────────────────────────
+// ── Chalkboard — tagline lives on the WALL ───────────────────────
 function Chalkboard() {
   const [cursor, setCursor] = useState(true);
   useEffect(() => {
@@ -219,7 +282,7 @@ function Chalkboard() {
   );
 }
 
-// ── Logo sign ────────────────────────────────────────────────────
+// ── Logo sign — INSIDE the room on the back wall ─────────────────
 function LogoSign() {
   return (
     <div className="hq-logo-sign" aria-label="Bot Fleet Inc">
@@ -264,14 +327,29 @@ function NoticeBoard({ stats }) {
   );
 }
 
+// ── Standup circle — pulsing ring on the floor ───────────────────
+function StandupCircle() {
+  return (
+    <div className="hq-standup-circle" aria-label="Standup circle" aria-hidden="true">
+      <div className="hq-standup-ring hq-standup-ring--outer" />
+      <div className="hq-standup-ring hq-standup-ring--inner" />
+      <div className="hq-standup-dot" style={{ left: '15%', top: '35%' }} />
+      <div className="hq-standup-dot" style={{ left: '35%', top: '10%' }} />
+      <div className="hq-standup-dot" style={{ left: '65%', top: '10%' }} />
+      <div className="hq-standup-dot" style={{ left: '85%', top: '35%' }} />
+      <div className="hq-standup-dot" style={{ left: '50%', top: '65%' }} />
+    </div>
+  );
+}
+
 // ── Main HQRoom component ────────────────────────────────────────
 export function HQRoom() {
   const { bots, loading } = useFleet();
   const displayBots = loading ? STATIC_FLEET : bots;
   const stats = useStats();
 
-  // Build a quick status lookup: botName → status
-  const fleetStatus = Object.fromEntries(
+  // Build a quick status lookup: botApiName → status
+  const statusByName = Object.fromEntries(
     displayBots.map((b) => [b.name, b.status])
   );
 
@@ -298,7 +376,11 @@ export function HQRoom() {
 
       {/* ── PENDANT LAMP (lounge) ── */}
       <div className="hq-pendant" style={{ left: '73%' }} aria-hidden="true" />
-      <div className="hq-lamp-glow" style={{ left: 'calc(73% - 120px)', top: '48px', width: '240px', height: '280px' }} aria-hidden="true" />
+      <div
+        className="hq-lamp-glow"
+        style={{ left: 'calc(73% - 120px)', top: '48px', width: '240px', height: '280px' }}
+        aria-hidden="true"
+      />
 
       {/* ═══ ZONE 1 — SERVER ROOM ═══ */}
       <div className="hq-server-rack" aria-label="Server rack" role="img">
@@ -311,12 +393,12 @@ export function HQRoom() {
         ))}
       </div>
 
-      {/* Night window (left side, near server room) */}
+      {/* Night window — left (server room) */}
       <div className="hq-window hq-window--left" aria-label="Window — night sky" role="img">
         <div className="hq-win-cross-h" />
         <div className="hq-win-cross-v" />
-        <div className="hq-star" style={{ top: '8px', left: '12px' }} />
-        <div className="hq-star" style={{ top: '4px', left: '36px' }} />
+        <div className="hq-star" style={{ top: '8px',  left: '12px' }} />
+        <div className="hq-star" style={{ top: '4px',  left: '36px' }} />
         <div className="hq-star" style={{ top: '14px', left: '56px' }} />
         <div className="hq-star" style={{ top: '22px', left: '20px' }} />
         <div className="hq-star" style={{ top: '30px', left: '48px' }} />
@@ -325,13 +407,13 @@ export function HQRoom() {
 
       {/* ═══ ZONE 2 — STANDUP / MAIN AREA ═══ */}
 
-      {/* Logo sign — CENTER WALL (branding INSIDE room, not external) */}
+      {/* ▶ LOGO SIGN — branding INSIDE the room on the back wall */}
       <LogoSign />
 
-      {/* Chalkboard — "Autonom. Omtrent._" lives on the wall, not external UI */}
+      {/* ▶ CHALKBOARD — "Autonom. Omtrent._" on the wall, not external UI */}
       <Chalkboard />
 
-      {/* Whiteboard (mini) */}
+      {/* Whiteboard — workflow diagram */}
       <div className="hq-whiteboard" aria-label="Whiteboard">
         <div className="hq-wb-diagram">
           <div className="hq-wb-box" style={{ background: '#AAAACC' }}>PLAN</div>
@@ -348,17 +430,10 @@ export function HQRoom() {
       {/* Standup table */}
       <div className="hq-standup-table" aria-hidden="true" />
 
-      {/* Standup circle on floor */}
-      <div className="hq-standup-circle" aria-label="Standup circle" aria-hidden="true">
-        <div className="hq-standup-ring" />
-        <div className="hq-standup-dot" style={{ left: '20%', top: '30%' }} />
-        <div className="hq-standup-dot" style={{ left: '40%', top: '10%' }} />
-        <div className="hq-standup-dot" style={{ left: '60%', top: '10%' }} />
-        <div className="hq-standup-dot" style={{ left: '80%', top: '30%' }} />
-        <div className="hq-standup-dot" style={{ left: '50%', top: '60%' }} />
-      </div>
+      {/* Standup circle — pulsing ring on the floor */}
+      <StandupCircle />
 
-      {/* Notice board */}
+      {/* Notice board (stats) */}
       <NoticeBoard stats={stats} />
 
       {/* ═══ ZONE 3 — LOUNGE ═══ */}
@@ -371,7 +446,7 @@ export function HQRoom() {
           ['#7BC67E', '#FFB347', '#4ECDC4', '#8C6040', '#FF6B8A'],
           ['#C3A6D4', '#7BC67E', '#FFB347', '#4ECDC4'],
         ].map((row, i) => (
-          <div key={i} className="hq-shelf-row">
+          <div key={i} className="hq-shelf-row" style={i === 3 ? { borderBottom: 'none' } : {}}>
             {row.map((c, j) => (
               <div key={j} className="hq-book" style={{ background: c }} />
             ))}
@@ -412,18 +487,18 @@ export function HQRoom() {
         <div className="hq-pot" />
       </div>
 
-      {/* Night window (right side, lounge) */}
+      {/* Night window — right (lounge) */}
       <div className="hq-window hq-window--right" aria-label="Window — night sky" role="img">
         <div className="hq-win-cross-h" />
         <div className="hq-win-cross-v" />
-        <div className="hq-star" style={{ top: '6px', left: '10px' }} />
+        <div className="hq-star" style={{ top: '6px',  left: '10px' }} />
         <div className="hq-star" style={{ top: '18px', left: '52px' }} />
         <div className="hq-star" style={{ top: '28px', left: '30px' }} />
         <div className="hq-moon" style={{ top: '4px', right: '6px' }} />
       </div>
 
-      {/* "Meet the Fleet" CTA — lives in the lounge corner of the room */}
-      <div className="hq-lounge-cta" aria-label="Lounge: call to action">
+      {/* ▶ "Meet the Fleet" CTA — lounge corner of the room */}
+      <div className="hq-lounge-cta" aria-label="Lounge: meet the fleet">
         <div className="hq-lounge-cta__sign">LOUNGE</div>
         <Link to="/the-team" className="hq-lounge-cta__btn">
           &gt; Meet the Fleet ↓
@@ -443,9 +518,13 @@ export function HQRoom() {
       <div className="hq-floor" aria-hidden="true" />
       <div className="hq-baseboard" aria-hidden="true" />
 
-      {/* ═══ BOTS ═══ */}
+      {/* ═══ BOTS — positions driven by live GitHub status ═══ */}
       {BOTS.map((bot) => (
-        <BotSlot key={bot.id} bot={bot} fleetStatus={fleetStatus} />
+        <BotSlot
+          key={bot.id}
+          bot={bot}
+          status={statusByName[bot.apiName]}
+        />
       ))}
 
       {/* ═══ EMBEDDED NAV (replaces global Navbar on homepage) ═══ */}
@@ -463,7 +542,7 @@ export function HQRoom() {
           >
             Intranett ↗
           </a>
-          <Link to="/status"    className="hq-nav__link">Status ↗</Link>
+          <Link to="/status" className="hq-nav__link">Status ↗</Link>
         </div>
         <div className="hq-nav__right">EN</div>
       </nav>

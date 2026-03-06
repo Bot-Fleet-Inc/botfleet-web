@@ -1,7 +1,10 @@
 /* ══════════════════════════════════════════════════════════════
    HQRoom — Bot Fleet Inc Homepage 2D Office Landscape
-   WEB-10 · design-bot prototype base · 2026-03-06
+   WEB-10 · design-bot WEB-HQ-prototype.html base · 2026-03-06
    ══════════════════════════════════════════════════════════════ */
+
+/* Google Fonts — pixel + mono */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap');
 
 /* ── Room tokens ──────────────────────────────────────────────── */
 :root {
@@ -17,7 +20,7 @@
   --room-teal:       #4ECDC4;
 }
 
-/* ── Scene root ──────────────────────────────────────────────── */
+/* ── Scene root — fills entire viewport ─────────────────────── */
 .hq-scene {
   position: relative;
   width: 100vw;
@@ -28,6 +31,8 @@
   font-family: 'JetBrains Mono', monospace;
   image-rendering: pixelated;
   cursor: default;
+  /* Prevent text selection during drag-like hover */
+  user-select: none;
 }
 
 /* ── Ceiling ─────────────────────────────────────────────────── */
@@ -169,7 +174,7 @@
   97% { opacity: 0.6; }
 }
 
-/* Night window — left */
+/* Night windows */
 .hq-window {
   position: absolute;
   top: 68px;
@@ -201,11 +206,11 @@
 }
 .hq-star:nth-child(3) { animation-delay: 0.5s; }
 .hq-star:nth-child(4) { animation-delay: 1.2s; }
-.hq-star:nth-child(5) { animation-delay: 0.8s; }
+.hq-star:nth-child(5) { animation-delay: 2.1s; }
 
 @keyframes hq-twinkle {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 0.2; }
+  0%, 80%, 100% { opacity: 1; }
+  90% { opacity: 0.2; }
 }
 
 .hq-moon {
@@ -225,10 +230,10 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
-   ZONE 2 — MAIN AREA: LOGO SIGN + CHALKBOARD + WHITEBOARD
+   ZONE 2 — MAIN AREA: LOGO SIGN + CHALKBOARD + STANDUP
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Logo Sign (wall center, branding INSIDE room) ───────────── */
+/* ── Logo sign — BOT FLEET INC on the back wall ─────────────── */
 .hq-logo-sign {
   position: absolute;
   top: 62px;
@@ -261,7 +266,7 @@
   letter-spacing: 1px;
 }
 
-/* ── Chalkboard ("Autonom. Omtrent._" lives on the wall) ──────── */
+/* ── Chalkboard — "Autonom. Omtrent._" lives on the wall ──────── */
 .hq-chalkboard {
   position: absolute;
   top: 62px;
@@ -318,12 +323,12 @@
 .hq-whiteboard {
   position: absolute;
   top: 72px;
-  left: 58%;
-  transform: translateX(-100%) translateX(-16px);
-  width: 140px;
-  height: 100px;
+  left: 59%;
+  transform: translateX(-10px);
+  width: 150px;
+  min-height: 110px;
   background: #D8D4C0;
-  border: 5px solid #6B4A20;
+  border: 4px solid #6B4A20;
   padding: 8px;
   z-index: 10;
   display: flex;
@@ -332,27 +337,27 @@
 .hq-wb-diagram {
   display: flex;
   align-items: center;
-  gap: 3px;
-  margin-bottom: 6px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 .hq-wb-box {
-  width: 28px; height: 16px;
+  width: 28px; height: 18px;
   border: 1px solid #888;
-  font-size: 5px;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 6px;
+  font-family: 'Press Start 2P', monospace;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #333;
 }
 .hq-wb-arrow {
-  font-size: 9px;
+  font-size: 10px;
   color: #555;
 }
 .hq-wb-line {
   height: 1px;
   background: #B0AAA0;
-  margin: 5px 0;
+  margin: 6px 0;
 }
 
 /* ── Standup table ───────────────────────────────────────────── */
@@ -366,43 +371,53 @@
   z-index: 8;
 }
 
-/* ── Standup circle on floor ─────────────────────────────────── */
+/* ── Standup circle — pulsing ring on the floor ─────────────── */
 .hq-standup-circle {
   position: absolute;
   bottom: 100px;
   left: 28%;
-  width: 220px;
-  height: 50px;
+  width: 200px;
+  height: 52px;
   z-index: 2;
+  pointer-events: none;
 }
 .hq-standup-ring {
   position: absolute;
-  inset: 0;
-  border: 2px dashed rgba(78,205,196,0.2);
   border-radius: 50%;
-  animation: hq-pulse 3s ease-in-out infinite;
+  border: 2px solid rgba(78,205,196,0.2);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
 }
-@keyframes hq-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50%       { opacity: 0.6; transform: scale(1.03); }
+.hq-standup-ring--outer {
+  width: 180px; height: 44px;
+  animation: hq-standup-pulse 3s ease-in-out infinite;
 }
+.hq-standup-ring--inner {
+  width: 120px; height: 30px;
+  border-color: rgba(78,205,196,0.12);
+  animation: hq-standup-pulse 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes hq-standup-pulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scaleX(1); }
+  50%       { opacity: 0.9; transform: translate(-50%, -50%) scaleX(1.04); }
+}
+
 .hq-standup-dot {
   position: absolute;
-  width: 8px; height: 8px;
+  width: 4px; height: 4px;
   border-radius: 50%;
   background: rgba(78,205,196,0.35);
   transform: translate(-50%, -50%);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   NOTICE BOARD
-   ══════════════════════════════════════════════════════════════ */
-
+/* ── Notice board ────────────────────────────────────────────── */
 .hq-notice-board {
   position: absolute;
   top: 72px;
-  right: 68px;
-  width: 210px;
+  right: 22%;
+  transform: translateX(60px);
+  width: 200px;
   background: #3D2A12;
   border: 4px solid #6B4A20;
   padding: 8px;
@@ -424,37 +439,37 @@
 .hq-stat-note {
   padding: 4px 3px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
-.hq-stat-note--yellow  { background: #FFEA48; color: #1A1510; }
-.hq-stat-note--teal    { background: #60C6B2; color: #1A1510; }
-.hq-stat-note--green   { background: #8CDA8C; color: #1A1510; }
-.hq-stat-note--purple  { background: #D296DC; color: #1A1510; }
-
 .hq-stat-val {
   font-size: 11px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  display: block;
   line-height: 1.2;
+  font-family: 'JetBrains Mono', monospace;
 }
 .hq-stat-lbl {
   font-size: 5px;
-  font-family: 'Press Start 2P', monospace;
   opacity: 0.85;
+  display: block;
+  font-family: 'Press Start 2P', monospace;
+  color: rgba(0,0,0,0.6);
+  margin-top: 2px;
 }
+.hq-stat-note--yellow { background: #FFEA48; color: #1A1510; }
+.hq-stat-note--teal   { background: #60C6B2; color: #1A1510; }
+.hq-stat-note--green  { background: #8CDA8C; color: #1A1510; }
+.hq-stat-note--purple { background: #D296DC; color: #1A1510; }
 
 /* ══════════════════════════════════════════════════════════════
-   ZONE 3 — LOUNGE
+   ZONE 3 — LOUNGE (right)
    ══════════════════════════════════════════════════════════════ */
 
+/* Bookshelf */
 .hq-bookshelf {
   position: absolute;
   bottom: 100px;
-  left: 59.5%;
-  width: 62px;
-  height: 180px;
+  left: 59%;
+  width: 62px; height: 175px;
   background: #3A2810;
   border: 2px solid #6B4A20;
   z-index: 8;
@@ -468,15 +483,12 @@
   padding: 2px;
   gap: 2px;
 }
-.hq-shelf-row:last-child { border-bottom: none; }
 .hq-book {
-  width: 8px;
-  height: 28px;
-  border-radius: 0;
+  width: 8px; height: 28px;
   border-right: 1px solid rgba(0,0,0,0.3);
-  flex-shrink: 0;
 }
 
+/* Sofa */
 .hq-sofa {
   position: absolute;
   bottom: 160px;
@@ -486,23 +498,26 @@
   z-index: 8;
 }
 .hq-sofa-arm {
-  width: 14px;
-  height: 42px;
+  width: 14px; height: 42px;
   background: #382840;
   border: 2px solid #4E3C5C;
   border-radius: 2px 2px 0 0;
   flex-shrink: 0;
 }
-.hq-sofa-body { display: flex; flex-direction: column; }
+.hq-sofa-body { flex: 1; }
 .hq-sofa-back {
-  width: 200px;
+  width: 220px;
   height: 32px;
   background: #382840;
   border-top: 2px solid #4E3C5C;
   border-left: 2px solid #4E3C5C;
   border-right: 2px solid #4E3C5C;
 }
-.hq-sofa-seat { height: 22px; display: flex; }
+.hq-sofa-seat {
+  display: flex;
+  height: 22px;
+  width: 220px;
+}
 .hq-sofa-cushion {
   flex: 1;
   background: #4A3658;
@@ -510,30 +525,29 @@
   border-top: 2px solid #5E4A6E;
 }
 
+/* Coffee table */
 .hq-coffee-table {
   position: absolute;
   bottom: 155px;
   left: 64%;
-  width: 130px;
-  height: 8px;
+  width: 130px; height: 8px;
   background: #7A5222;
   border-top: 2px solid #A06828;
   z-index: 9;
 }
 
+/* Coffee machine */
 .hq-coffee-machine {
   position: absolute;
   bottom: 162px;
-  left: calc(59.5% + 68px);
-  width: 48px;
-  height: 56px;
+  left: calc(59% + 68px);
+  width: 48px; height: 56px;
   background: #1E1812;
   border: 2px solid #3A3020;
   z-index: 8;
 }
 .hq-cm-screen {
-  width: 36px;
-  height: 16px;
+  width: 36px; height: 16px;
   margin: 4px auto;
   background: #0A1420;
   border: 1px solid #1E3850;
@@ -556,9 +570,10 @@
   border: 1px solid #5CBA8C;
 }
 
+/* Plant */
 .hq-plant {
   position: absolute;
-  right: 168px;
+  right: 68px;
   bottom: 100px;
   z-index: 8;
 }
@@ -570,17 +585,16 @@
   margin-bottom: 2px;
 }
 .hq-pot {
-  width: 40px;
-  height: 28px;
+  width: 40px; height: 28px;
   background: #5C3C18;
   border-top: 3px solid #7A5222;
 }
 
-/* ── Lounge CTA ──────────────────────────────────────────────── */
+/* ── Lounge CTA — "Meet the Fleet" lives in the lounge ──────── */
 .hq-lounge-cta {
   position: absolute;
-  bottom: 180px;
-  right: 80px;
+  bottom: 220px;
+  right: 4%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -589,11 +603,10 @@
 }
 .hq-lounge-cta__sign {
   font-family: 'Press Start 2P', monospace;
-  font-size: 7px;
+  font-size: 6px;
   color: var(--room-amber);
   letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(255,179,71,0.4);
-  margin-bottom: 2px;
+  opacity: 0.7;
 }
 .hq-lounge-cta__btn {
   display: block;
@@ -601,27 +614,28 @@
   font-size: 8px;
   color: var(--room-teal);
   text-decoration: none;
-  padding: 8px 12px;
+  padding: 8px 14px;
+  background: rgba(14,11,8,0.85);
   border: 1px solid var(--room-teal);
-  background: rgba(78,205,196,0.08);
-  text-shadow: 0 0 6px rgba(78,205,196,0.5);
+  box-shadow: 0 0 8px rgba(78,205,196,0.2);
   transition: background 0.2s, box-shadow 0.2s;
   white-space: nowrap;
 }
 .hq-lounge-cta__btn:hover {
-  background: rgba(78,205,196,0.18);
-  box-shadow: 0 0 12px rgba(78,205,196,0.3);
+  background: rgba(78,205,196,0.1);
+  box-shadow: 0 0 16px rgba(78,205,196,0.35);
 }
 .hq-lounge-cta__sticky {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   color: #1A1510;
-  text-decoration: none;
   background: #FFEA48;
   padding: 3px 8px;
+  text-decoration: none;
   transform: rotate(-2deg);
   display: block;
   transition: transform 0.15s;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 .hq-lounge-cta__sticky:hover { transform: rotate(0deg) scale(1.05); }
 
@@ -637,22 +651,38 @@
   align-items: center;
   z-index: 20;
   cursor: pointer;
-  transition: transform 0.12s;
+  /* Smooth repositioning when zone changes */
+  transition: left 0.8s cubic-bezier(0.4,0,0.2,1),
+              bottom 0.8s cubic-bezier(0.4,0,0.2,1),
+              transform 0.1s;
+}
+.hq-bot-slot--lounge {
+  bottom: 175px;
 }
 .hq-bot-slot:hover,
 .hq-bot-slot--hovered {
   transform: translateY(-4px);
 }
 .hq-bot-sprite {
-  width: 96px;
-  height: 120px;
+  width: 96px; height: 120px;
   image-rendering: pixelated;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
-  transition: filter 0.2s;
+  display: block;
 }
+.hq-bot-slot--hovered .hq-bot-sprite,
 .hq-bot-slot:hover .hq-bot-sprite {
-  filter: drop-shadow(0 0 10px var(--bot-color)) drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+  filter:
+    drop-shadow(0 0 12px var(--bot-color))
+    drop-shadow(0 4px 8px rgba(0,0,0,0.6));
 }
+
+/* Placeholder when sprite not yet on R2 */
+.hq-bot-placeholder {
+  width: 72px; height: 96px;
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
 .hq-bot-name {
   font-family: 'Press Start 2P', monospace;
   font-size: 6px;
@@ -665,6 +695,14 @@
   border-radius: 50%;
   margin-top: 3px;
   opacity: 0.85;
+}
+.hq-bot-reflection {
+  width: 60px; height: 8px;
+  border-radius: 50%;
+  opacity: 0.2;
+  margin-top: 2px;
+  background: var(--bot-color);
+  filter: blur(3px);
 }
 
 /* ── Speech bubbles ──────────────────────────────────────────── */
@@ -754,105 +792,103 @@
   flex-shrink: 0;
 }
 
+/* ── Pixel art image rendering ───────────────────────────────── */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE — mobile <768px
    ══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
   .hq-scene {
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    height: 100dvh;
+    overflow: hidden;
   }
 
-  /* Scale down scene contents */
-  .hq-scene > *:not(.hq-nav):not(.hq-floor):not(.hq-baseboard):not(.hq-ceiling):not(.hq-wall) {
-    transform-origin: top left;
-  }
-
-  /* Mobile: stack vertically */
+  /* Zone dividers hidden on mobile */
   .hq-zone-div { display: none; }
 
+  /* Logo sign centred */
   .hq-logo-sign {
     left: 50%;
     transform: translateX(-50%);
-    width: 220px;
+    width: 200px;
+    top: 56px;
   }
   .hq-logo-sign__title { font-size: 10px; }
 
+  /* Chalkboard below logo */
   .hq-chalkboard {
     left: 50%;
     transform: translateX(-50%);
-    top: 180px;
-    width: 220px;
+    top: 160px;
+    width: 200px;
   }
 
+  /* Notice board */
   .hq-notice-board {
-    position: absolute;
-    top: 310px;
+    top: 290px;
     right: auto;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  .hq-whiteboard { display: none; }
-  .hq-standup-table { display: none; }
-  .hq-standup-circle { display: none; }
-  .hq-bookshelf { display: none; }
-  .hq-sofa { display: none; }
-  .hq-coffee-table { display: none; }
-  .hq-coffee-machine { display: none; }
-  .hq-plant { display: none; }
-  .hq-pendant { display: none; }
-  .hq-lamp-glow { display: none; }
-  .hq-window--left { display: none; }
-  .hq-window--right { top: 68px; right: 12px; }
+  /* Hide complex furniture on mobile */
+  .hq-whiteboard,
+  .hq-standup-table,
+  .hq-standup-circle,
+  .hq-bookshelf,
+  .hq-sofa,
+  .hq-coffee-table,
+  .hq-coffee-machine,
+  .hq-plant,
+  .hq-pendant,
+  .hq-lamp-glow,
+  .hq-window--left,
   .hq-server-rack { display: none; }
 
-  /* Bots in a horizontal row at bottom */
+  .hq-window--right { top: 68px; right: 12px; }
+
+  /* Bots in a horizontal row at the bottom */
   .hq-bot-slot {
-    bottom: 108px;
+    bottom: 108px !important;
+    transition: left 0.5s ease, transform 0.1s;
   }
-  .hq-bot-slot[style*="left: 9%"]  { left: 4% !important; }
-  .hq-bot-slot[style*="left: 26%"] { left: 24% !important; }
-  .hq-bot-slot[style*="left: 34%"] { left: 40% !important; }
-  .hq-bot-slot[style*="left: 43%"] { left: 55% !important; }
-  .hq-bot-slot[style*="left: 65%"] { left: 72% !important; bottom: 108px !important; }
+  .hq-bot-slot--lounge { bottom: 108px !important; }
+
+  /* Reposition bots evenly by index using data attributes (CSS trick) */
+  .hq-bot-slot:nth-of-type(1)  { left:  2% !important; }
+  .hq-bot-slot:nth-of-type(2)  { left: 21% !important; }
+  .hq-bot-slot:nth-of-type(3)  { left: 40% !important; }
+  .hq-bot-slot:nth-of-type(4)  { left: 59% !important; }
+  .hq-bot-slot:nth-of-type(5)  { left: 78% !important; }
 
   .hq-bot-sprite {
-    width: 64px;
-    height: 80px;
+    width: 56px;
+    height: 70px;
   }
+  .hq-bot-name { font-size: 5px; }
 
   .hq-lounge-cta {
-    bottom: 200px;
+    bottom: 188px;
     right: auto;
     left: 50%;
     transform: translateX(-50%);
+    align-items: center;
   }
 
+  /* Compact nav */
   .hq-nav { gap: 14px; padding: 0 12px; }
   .hq-nav__links { gap: 14px; }
-  .hq-nav__link { font-size: 9px; }
-  .hq-nav__logo { font-size: 10px; }
-
-  /* More breathing room for room height */
-  .hq-floor { height: 106px; }
-
-  .hq-scene {
-    padding-bottom: 0;
-    height: 100dvh;
-  }
+  .hq-nav__link  { font-size: 9px; }
+  .hq-nav__logo  { font-size: 10px; }
 }
 
 @media (max-width: 480px) {
   .hq-nav__links a:nth-child(n+4) { display: none; }
-  .hq-notice-board { width: 180px; }
-}
-
-/* ── Pixel art image rendering ───────────────────────────────── */
-.pixel-art {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  .hq-notice-board { width: 168px; }
+  .hq-lounge-cta__btn { font-size: 7px; padding: 6px 10px; }
 }
