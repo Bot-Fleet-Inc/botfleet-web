@@ -19,12 +19,22 @@ const SPRITE_BASE = 'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites
 
 // ─── Workstation positions (% of canvas) ───────────────────────────────────
 const WORKSTATION_POSITIONS = {
-  dispatch: { x: 15, y: 22 },
-  design:   { x: 75, y: 15 },
-  archi:    { x: 80, y: 68 },
-  coding:   { x: 20, y: 72 },
-  infra:    { x: 50, y: 82 },
-  audit:    { x: 10, y: 50 },
+  dispatch: { x: 10, y: 12 },
+  design:   { x: 28, y: 25 },
+  coding:   { x: 12, y: 42 },
+  audit:    { x: 62, y: 68 },
+  archi:    { x: 72, y: 15 },
+  infra:    { x: 55, y: 82 },
+}
+
+// Lounge positions (idle bots go here)
+const LOUNGE_POSITIONS = {
+  dispatch: { x: 58, y: 62 },
+  design:   { x: 72, y: 72 },
+  coding:   { x: 60, y: 78 },
+  audit:    { x: 75, y: 62 },
+  archi:    { x: 65, y: 85 },
+  infra:    { x: 80, y: 78 },
 }
 
 // Standup circle
@@ -66,18 +76,30 @@ function fallbackSrc(botId, current) {
 export function StandupCanvas({ bots = [], phase = 'idle' }) {
   const positions = useMemo(() => {
     return bots.map((bot, i) => {
-      const workstation = WORKSTATION_POSITIONS[bot.id] ?? { x: 50, y: 50 }
+      const workstation = WORKSTATION_POSITIONS[bot.id] ?? { x: 25, y: 25 }
+      const lounge      = LOUNGE_POSITIONS[bot.id] ?? { x: 70, y: 70 }
       const circle      = circlePosition(i, bots.length)
       const inCircle    = phase === 'standup' || phase === 'gathering'
+      const isIdle      = bot.standupStatus === 'idle' || bot.standupStatus === 'loading' || bot.standupStatus === 'unknown'
       return {
         ...bot,
-        pos: inCircle ? circle : workstation,
+        pos: inCircle ? circle : (isIdle ? lounge : workstation),
       }
     })
   }, [bots, phase])
 
   return (
     <div className="standup-canvas" role="img" aria-label="Bot Fleet — live workspace">
+      <div className="standup-canvas__grid" />
+      {/* Room zones */}
+      <div className="standup-canvas__zone standup-canvas__zone--work" />
+      <div className="standup-canvas__zone standup-canvas__zone--lounge" />
+      <div className="standup-canvas__zone standup-canvas__zone--standup" />
+      {/* Room labels */}
+      <span className="standup-canvas__room standup-canvas__room--hq">⬡ BOT FLEET HQ</span>
+      <span className="standup-canvas__room standup-canvas__room--work">🖥 Workstations</span>
+      <span className="standup-canvas__room standup-canvas__room--lounge">☕ Lounge</span>
+      <span className="standup-canvas__room standup-canvas__room--standup">◎ Standup</span>
       {/* Grid background */}
       <div className="standup-canvas__grid" />
 
