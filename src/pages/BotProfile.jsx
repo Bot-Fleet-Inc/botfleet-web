@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
 import { BotSprite } from '../components/BotSprite.jsx';
 import { StatusBadge } from '../components/StatusDot.jsx';
+import { ExcalidrawViewer } from '../components/ExcalidrawViewer.jsx';
 import './BotProfile.css';
 
 export function BotProfile() {
@@ -84,6 +85,11 @@ export function BotProfile() {
           </ul>
         </section>
       )}
+
+      <section className="bot-profile__section">
+        <h2 className="bot-profile__section-title">Bot States Diagram</h2>
+        <ExcalidrawViewer slug="bot-states" height={300} title="Bot States · design-bot" />
+      </section>
 
       {bot.githubUser && (
         <section className="bot-profile__section">
