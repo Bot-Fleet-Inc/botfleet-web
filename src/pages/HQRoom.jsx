@@ -60,15 +60,19 @@ const ZONE_POSITIONS = {
     lounge:      { left: '62%', bottom: '175px' },
   },
   audit: {
-    workstation: { left: '76%' },
+    // Audit is "planned" — defaults to lounge/observer position
+    workstation: { left: '78%', bottom: '175px' },
     standup:     { left: '42%' },
-    lounge:      { left: '76%', bottom: '175px' },
+    lounge:      { left: '78%', bottom: '175px' },
   },
 };
 
 /** Derive which visual zone a bot should be in based on live status */
 function deriveZone(botStatus, defaultZone) {
-  if (!botStatus || botStatus === 'offline' || botStatus === 'planned') return 'workstation';
+  // Offline bots go to workstation (idle at desk)
+  if (!botStatus || botStatus === 'offline') return 'workstation';
+  // Planned bots default to their configured zone (e.g. audit → lounge/observer)
+  if (botStatus === 'planned') return defaultZone || 'lounge';
   if (botStatus === 'active' || botStatus === 'loading') return defaultZone || 'workstation';
   return defaultZone || 'workstation';
 }
@@ -144,6 +148,20 @@ const BOTS = [
       '> have you tried turning it off.',
     ],
     link: '/bots/infra-bot',
+  },
+  {
+    id: 'audit',
+    apiName: 'audit-bot',
+    key: 'audit',
+    displayName: 'Audit',
+    color: '#5CBA8C',
+    defaultZone: 'lounge',
+    bubbles: [
+      '> DoD not met. revise.',
+      '> where is the test coverage.',
+      '> lgtm. (barely)',
+    ],
+    link: '/bots/audit-bot',
   },
 ];
 
