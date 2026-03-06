@@ -246,3 +246,41 @@
   width: 60px !important;
   height: 75px !important;
 }
+
+/* ── Hero bot grid (right panel) ── */
+.hero__right {
+  grid-area: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.hero__bot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+/* Override BotHeroUnit size in hero */
+.hero__bot-grid .bot-hero-unit__sprite {
+  width: 120px !important;
+  height: 150px !important;
+}
+
+.hero__bot-grid .bot-hero-unit {
+  padding: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .hero__bot-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .hero__bot-grid .bot-hero-unit__sprite {
+    width: 80px !important;
+    height: 100px !important;
+  }
+}
