@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense } from 'react'
 import { Navbar } from './components/Navbar.jsx'
 import { Home } from './pages/Home.jsx'
 import { TheTeam } from './pages/TheTeam.jsx'
@@ -33,11 +33,9 @@ export default function App() {
             <Route path="/intranet" element={<IntranetHome />} />
             <Route path="/intranet/bots/:name" element={<BotProfile intranet />} />
             <Route path="/intranet/epics" element={<EpicsTimeline />} />
-
-            {/* ── Status ── */}
+            {/* Status */}
             <Route path="/status" element={<Status />} />
-
-            {/* ── Fallback ── */}
+            {/* Fallback */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

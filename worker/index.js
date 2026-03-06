@@ -2,18 +2,22 @@
  * Bot Fleet Web — Cloudflare Worker entry point.
  *
  * Routes:
- *   /api/bots          → fleet roster
- *   /api/bots/:name    → single bot profile
- *   /api/epics         → executive epics + timeline
- *   /api/activity      → activity feed (GET + POST webhook)
- *   /*                 → static assets (Vite build)
+ *   /api/bots                  → fleet roster
+ *   /api/bots/:name            → single bot profile
+ *   /api/epics                 → executive epics + timeline
+ *   /api/activity              → activity feed (GET + POST webhook)
+ *   /api/status                → combined fleet health (legacy)
+ *   /api/status/github-rate    → GitHub rate limit
+ *   /api/status/workers        → KV + D1 health
+ *   /api/status/bots           → bot VM health
+ *   /*                         → static assets (Vite build)
  */
 
-import { handleGetBots, handleGetBot }     from './routes/bots.js';
-import { handleGetEpics }                  from './routes/epics.js';
-import { handleGetActivity, handlePostActivity } from './routes/activity.js';
-import { handleGitHubRate, handleWorkersHealth, handleBotHealth } from './routes/status.js';
-import { handleOptions, jsonError }        from './lib/cors.js';
+import { handleGetBots, handleGetBot }                         from './routes/bots.js';
+import { handleGetEpics }                                      from './routes/epics.js';
+import { handleGetActivity, handlePostActivity }               from './routes/activity.js';
+import { handleStatus, handleGitHubRate, handleWorkersHealth, handleBotHealth } from './routes/status.js';
+import { handleOptions, jsonError }                            from './lib/cors.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -50,6 +54,11 @@ export default {
     // Route: POST /api/activity  (GitHub webhook receiver)
     if (method === 'POST' && path === '/api/activity') {
       return handlePostActivity(request, env, ctx, {});
+    }
+
+    // Route: GET /api/status (combined, legacy compat)
+    if (method === 'GET' && path === '/api/status') {
+      return handleStatus(request, env, ctx, {});
     }
 
     // Route: GET /api/status/github-rate
