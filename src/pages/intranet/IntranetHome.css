@@ -1,0 +1,248 @@
+/* IntranetHome — fleet operations dashboard */
+
+.intranet-home {
+  padding: var(--space-10);
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* ─── Header ───────────────────────────── */
+.intranet-home__header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-6);
+}
+
+.intranet-home__title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-coding);
+  margin: 0 0 var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.intranet-home__title-label {
+  font-size: 9px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.15em;
+}
+
+.intranet-home__sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.intranet-home__links {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.intranet-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-coding);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-smooth);
+}
+.intranet-link:hover { border-color: var(--color-coding); }
+.intranet-link--small { font-size: 11px; margin-left: auto; }
+
+/* ─── Section title ─────────────────────── */
+.intranet-section-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-5) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* ─── Org Chart ─────────────────────────── */
+.intranet-org {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.intranet-org__tier {
+  display: flex;
+  gap: var(--space-5);
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: var(--space-4) 0;
+}
+
+.intranet-org__connector {
+  width: 1px;
+  height: var(--space-6);
+  background: var(--color-border);
+}
+
+.intranet-org__human {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.intranet-org__human-emoji { font-size: 24px; }
+.intranet-org__human-name {
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--color-text);
+}
+.intranet-org__human-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+}
+
+/* ─── Bot Node ──────────────────────────── */
+.bot-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  position: relative;
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+  min-width: 120px;
+}
+.bot-node::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--bot-color);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.bot-node:hover {
+  border-color: var(--bot-color);
+  box-shadow: 0 0 0 1px var(--bot-color);
+}
+
+.bot-node__emoji { font-size: 20px; }
+.bot-node__name {
+  font-family: var(--font-display);
+  font-size: 8px;
+  color: var(--color-text);
+  text-align: center;
+}
+.bot-node__status { font-size: 10px; }
+.bot-node__epic {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
+  text-align: center;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bot-node--compact {
+  min-width: 100px;
+  padding: var(--space-3) var(--space-4);
+}
+.bot-node--compact .bot-node__emoji { font-size: 16px; }
+
+/* ─── Active Epics ──────────────────────── */
+.intranet-epics__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.intranet-epics__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.intranet-epics__link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--color-text);
+}
+.intranet-epics__link:hover .intranet-epics__title { color: var(--color-coding); }
+
+.intranet-epics__num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  flex-shrink: 0;
+}
+.intranet-epics__title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  flex: 1;
+  transition: color var(--transition-smooth);
+}
+.intranet-epics__arrow { color: var(--color-text-dim); font-size: 11px; }
+
+.intranet-epics__bots {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.intranet-epics__bot-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--bot-color, var(--color-text-dim));
+  border: 1px solid var(--bot-color, var(--color-border));
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  text-transform: lowercase;
+  transition: background var(--transition-smooth);
+}
+.intranet-epics__bot-chip:hover { background: color-mix(in srgb, var(--bot-color) 15%, transparent); }
+
+/* ─── Roster grid ───────────────────────── */
+.intranet-roster__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.intranet-empty {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin: 0;
+}
+
+/* ─── Responsive ────────────────────────── */
+@media (max-width: 640px) {
+  .intranet-home { padding: var(--space-6) var(--space-4); }
+  .intranet-org__tier { gap: var(--space-3); }
+  .bot-node { min-width: 90px; }
+}
