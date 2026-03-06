@@ -7,7 +7,7 @@ import { Updates } from './pages/Updates.jsx'
 import { BotProfile } from './pages/BotProfile.jsx'
 import { IntranetHome } from './pages/intranet/IntranetHome.jsx'
 import { EpicsTimeline } from './pages/intranet/EpicsTimeline.jsx'
-import { StatusPage } from './pages/StatusPage.jsx'
+import { Status } from './pages/status/Status.jsx'
 import './App.css'
 
 function LoadingFallback() {
@@ -34,7 +34,8 @@ export default function App() {
             <Route path="/intranet/bots/:name" element={<BotProfile intranet />} />
             <Route path="/intranet/epics" element={<EpicsTimeline />} />
             {/* Status */}
-            <Route path="/status" element={<StatusPage />} />
+            <Route path="/status" element={<Status />} />
+            {/* Fallback */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

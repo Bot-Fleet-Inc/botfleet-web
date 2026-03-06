@@ -49,14 +49,12 @@ export function Navbar() {
           </a>
         </li>
         <li>
-          <a
-            href="https://status.bot-fleet.org"
-            className="navbar__link navbar__link--external"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/status"
+            className={`navbar__link navbar__link--external ${pathname === '/status' ? 'navbar__link--active' : ''}`}
           >
             {t('nav.status')}
-          </a>
+          </Link>
         </li>
       </ul>
 
