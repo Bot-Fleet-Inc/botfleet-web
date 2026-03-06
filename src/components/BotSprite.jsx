@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 
-const SPRITE_BASE = 'https://raw.githubusercontent.com/Bot-Fleet-Inc/design-bot/main/design-system/sprites';
+const SPRITE_BASE = 'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites';
 
 // Map bot names to sprite prefixes
 const SPRITE_PREFIXES = {
@@ -17,7 +17,7 @@ function getPrefix(botName) {
 
 function randomIdle(prefix) {
   const n = Math.floor(Math.random() * 10) + 1;
-  return `${SPRITE_BASE}/${prefix}-idle-${n}.gif`;
+  return `${SPRITE_BASE}/${prefix}-idle.gif`;
 }
 
 function restUrl(prefix) {
