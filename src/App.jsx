@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Suspense } from 'react'
+import { Suspense, lazy } from 'react'
 import { Navbar } from './components/Navbar.jsx'
 import { Home } from './pages/Home.jsx'
 import { TheTeam } from './pages/TheTeam.jsx'
@@ -7,6 +7,7 @@ import { Updates } from './pages/Updates.jsx'
 import { BotProfile } from './pages/BotProfile.jsx'
 import { IntranetHome } from './pages/intranet/IntranetHome.jsx'
 import { EpicsTimeline } from './pages/intranet/EpicsTimeline.jsx'
+import { Status } from './pages/status/Status.jsx'
 import './App.css'
 
 function LoadingFallback() {
@@ -32,6 +33,11 @@ export default function App() {
             <Route path="/intranet" element={<IntranetHome />} />
             <Route path="/intranet/bots/:name" element={<BotProfile intranet />} />
             <Route path="/intranet/epics" element={<EpicsTimeline />} />
+
+            {/* ── Status ── */}
+            <Route path="/status" element={<Status />} />
+
+            {/* ── Fallback ── */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

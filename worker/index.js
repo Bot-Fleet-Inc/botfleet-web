@@ -12,6 +12,7 @@
 import { handleGetBots, handleGetBot }     from './routes/bots.js';
 import { handleGetEpics }                  from './routes/epics.js';
 import { handleGetActivity, handlePostActivity } from './routes/activity.js';
+import { handleGitHubRate, handleWorkersHealth, handleBotHealth } from './routes/status.js';
 import { handleOptions, jsonError }        from './lib/cors.js';
 
 export default {
@@ -49,6 +50,21 @@ export default {
     // Route: POST /api/activity  (GitHub webhook receiver)
     if (method === 'POST' && path === '/api/activity') {
       return handlePostActivity(request, env, ctx, {});
+    }
+
+    // Route: GET /api/status/github-rate
+    if (method === 'GET' && path === '/api/status/github-rate') {
+      return handleGitHubRate(request, env, ctx, {});
+    }
+
+    // Route: GET /api/status/workers
+    if (method === 'GET' && path === '/api/status/workers') {
+      return handleWorkersHealth(request, env, ctx, {});
+    }
+
+    // Route: GET /api/status/bots
+    if (method === 'GET' && path === '/api/status/bots') {
+      return handleBotHealth(request, env, ctx, {});
     }
 
     // 404 for unknown /api/* routes
