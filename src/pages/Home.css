@@ -39,15 +39,16 @@
   font-family: var(--font-pixel);
   font-size: 28px;
   line-height: 1.4;
-  color: var(--color-text);
+  color: var(--color-dispatch);
   letter-spacing: 0.02em;
 }
 
 .hero__tagline {
   font-family: var(--font-pixel);
-  font-size: 13px;
-  color: var(--color-design);  /* Design's colour — a wink */
-  line-height: 1.6;
+  font-size: 28px;
+  color: var(--color-dispatch);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
 }
 
 .hero__body {
@@ -170,6 +171,7 @@
     padding: var(--space-12) var(--space-8);
   }
   .hero__wordmark { font-size: 22px; }
+  .hero__tagline  { font-size: 22px; }
 }
 
 @media (max-width: 768px) {
@@ -177,7 +179,7 @@
     padding: var(--space-10) var(--space-6);
   }
   .hero__wordmark { font-size: 18px; }
-  .hero__tagline  { font-size: 10px; }
+  .hero__tagline  { font-size: 18px; }
   .hero__body     { font-size: 13px; }
   .hero__fleet-row { padding: var(--space-6); }
   .about__grid { grid-template-columns: 1fr; gap: var(--space-6); }
