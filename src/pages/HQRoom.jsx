@@ -440,10 +440,10 @@ export function HQRoom() {
       {/* Bookshelf */}
       <div className="hq-bookshelf" aria-hidden="true">
         {[
-          ['#4ECDC4', '#FF6B8A', '#FFB347', '#7BC67E', '#C3A6D4', '#8C6040'],
-          ['#FFB347', '#4ECDC4', '#8C6040', '#FF6B8A', '#C3A6D4'],
-          ['#7BC67E', '#FFB347', '#4ECDC4', '#8C6040', '#FF6B8A'],
-          ['#C3A6D4', '#7BC67E', '#FFB347', '#4ECDC4'],
+          ['#4ECDC4', '#FF6B8A', '#FFB347', '#7BC67E', '#C3A6D4', '#90A4AE'],
+          ['#4ECDC4', '#FF6B8A', '#FFB347', '#7BC67E', '#C3A6D4'],
+          ['#FF6B8A', '#FFB347', '#4ECDC4', '#90A4AE', '#7BC67E'],
+          ['#C3A6D4', '#4ECDC4', '#FF6B8A', '#FFB347'],
         ].map((row, i) => (
           <div key={i} className="hq-shelf-row" style={i === 3 ? { borderBottom: 'none' } : {}}>
             {row.map((c, j) => (
