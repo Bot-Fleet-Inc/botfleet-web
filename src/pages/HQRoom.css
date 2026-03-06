@@ -367,7 +367,7 @@
   left: 28%;
   width: 200px;
   height: 14px;
-  background: linear-gradient(180deg, #8C6030 0%, #6B4020 50%, #4A2C10 100%);
+  background: #6B4020; /* Flat pixel fill — no gradient */
   z-index: 8;
 }
 
@@ -501,7 +501,7 @@
   width: 14px; height: 42px;
   background: #382840;
   border: 2px solid #4E3C5C;
-  border-radius: 2px 2px 0 0;
+  /* No border-radius — pixel art has hard edges only */
   flex-shrink: 0;
 }
 .hq-sofa-body { flex: 1; }
@@ -578,11 +578,24 @@
   z-index: 8;
 }
 .hq-foliage {
-  width: 70px; height: 60px;
-  margin-left: -15px;
-  background: radial-gradient(ellipse, #3C6E3C 30%, #285228 70%);
-  border-radius: 50% 60% 40% 70%;
+  position: relative;
+  width: 56px;
+  height: 48px;
+  margin-left: -8px;
   margin-bottom: 2px;
+  /* Pixel art bush — flat fills, hard right-angle edges only */
+  background: #3C6E3C;
+  /* Stepped cross silhouette — zero bezier curves */
+  clip-path: polygon(
+    21% 0%,  79% 0%,
+    79% 25%, 100% 25%,
+    100% 75%, 79% 75%,
+    79% 100%, 21% 100%,
+    21% 75%,  0%  75%,
+    0%  25%, 21% 25%
+  );
+  /* Hard pixel shading on right face — no blur */
+  box-shadow: inset -4px 0 0 0 #285228, inset 0 -4px 0 0 #285228;
 }
 .hq-pot {
   width: 40px; height: 28px;
