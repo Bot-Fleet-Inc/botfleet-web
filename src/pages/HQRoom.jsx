@@ -28,8 +28,7 @@ function spriteRest(key) {
   return `${SPRITE_BASE}/${key}-rest.png`;
 }
 function spriteIdle(key) {
-  // Some sprites use -idle-1.gif, fall back to -idle.gif
-  return `${SPRITE_BASE}/${key}-idle-1.gif`;
+  return `${SPRITE_BASE}/${key}-idle.gif`;
 }
 
 // ── Zone position maps ────────────────────────────────────────────
