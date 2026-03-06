@@ -1,0 +1,213 @@
+/* BotCard — WEB-2-bot-card-spec.md */
+
+.bot-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.bot-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--bot-color, var(--color-border));
+}
+
+.bot-card:hover {
+  border-color: var(--bot-color, var(--color-border));
+  box-shadow: 0 0 0 1px var(--bot-color, transparent), 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* ─── Avatar ─────────── */
+.bot-card__avatar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--space-2);
+  position: relative;
+}
+
+.bot-card__sprite {
+  display: block;
+  width: 120px;
+  height: 150px;
+}
+
+.bot-card__avatar-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--bot-color, var(--color-text-dim));
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Hide fallback when sprite loads */
+.bot-card__sprite + .bot-card__avatar-fallback {
+  display: none;
+}
+.bot-card__sprite[style*="display: none"] + .bot-card__avatar-fallback {
+  display: flex;
+}
+
+/* ─── Body ───────────── */
+.bot-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ─── Header ─────────── */
+.bot-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bot-card__name {
+  font-family: var(--font-display);
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-text);
+  margin: 0;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+}
+
+/* ─── Status ─────────── */
+.bot-card__status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bot-card__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-dim);
+}
+
+[data-status="online"]  .bot-card__status-dot  { background: var(--color-status-online); }
+[data-status="working"] .bot-card__status-dot  { background: var(--bot-color); animation: pulse 1.4s ease-in-out infinite; }
+[data-status="idle"]    .bot-card__status-dot  { background: var(--color-status-offline); }
+[data-status="offline"] .bot-card__status-dot  { background: var(--color-border); }
+
+[data-status="online"]  .bot-card__status-badge { color: var(--color-status-online); }
+[data-status="working"] .bot-card__status-badge { color: var(--bot-color); }
+[data-status="idle"]    .bot-card__status-badge { color: var(--color-text-dim); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── Role ───────────── */
+.bot-card__role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--bot-color, var(--color-text-dim));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* ─── Current epic ───── */
+.bot-card__epic {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Pitch ──────────── */
+.bot-card__pitch {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin: 0;
+  padding: var(--space-3) 0 0 0;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ─── Footer ─────────── */
+.bot-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  margin-top: auto;
+}
+
+.bot-card__link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1px;
+  transition: color var(--transition-smooth), border-color var(--transition-smooth);
+}
+.bot-card__link:hover {
+  color: var(--bot-color);
+  border-color: var(--bot-color);
+}
+
+.bot-card__color-swatch {
+  width: 12px;
+  height: 12px;
+  background: var(--bot-color, transparent);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: inline-block;
+  margin-left: auto;
+}
+
+/* ─── Variants ───────── */
+.bot-card--compact {
+  grid-template-columns: 60px 1fr;
+  padding: var(--space-3);
+  gap: var(--space-3);
+}
+.bot-card--compact .bot-card__sprite { width: 60px; height: 75px; }
+.bot-card--compact .bot-card__pitch  { display: none; }
+
+.bot-card--featured {
+  grid-template-columns: 200px 1fr;
+}
+.bot-card--featured .bot-card__sprite { width: 200px; height: 250px; }
+.bot-card--featured .bot-card__name   { font-size: 14px; }
+.bot-card--featured .bot-card__pitch  { font-size: 15px; }
+
+[data-status="offline"].bot-card { opacity: 0.5; filter: grayscale(0.6); }
+
+/* ─── Responsive ─────── */
+@media (max-width: 480px) {
+  .bot-card {
+    grid-template-columns: 80px 1fr;
+    gap: var(--space-3);
+  }
+  .bot-card__sprite { width: 80px; height: 100px; }
+  .bot-card__name   { font-size: 9px; }
+}

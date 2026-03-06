@@ -1,8 +1,16 @@
+import { useState } from 'react'
+import { Navbar } from './components/Navbar.jsx'
+import { HomePage } from './pages/HomePage.jsx'
+import './styles/tokens.css'
+
 export default function App() {
+  const [lang, setLang] = useState('no')
+  const toggleLang = () => setLang(l => l === 'no' ? 'en' : 'no')
+
   return (
-    <div style={{fontFamily:'monospace',padding:'2rem'}}>
-      <h1>🤖 Bot Fleet Inc</h1>
-      <p>Web platform loading... coding-bot is on it.</p>
-    </div>
+    <>
+      <Navbar lang={lang} onLangToggle={toggleLang} />
+      <HomePage lang={lang} />
+    </>
   )
 }
