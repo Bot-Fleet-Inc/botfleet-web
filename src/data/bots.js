@@ -7,7 +7,7 @@
  */
 
 const SPRITE_BASE =
-  'https://raw.githubusercontent.com/Bot-Fleet-Inc/design-bot/main/design-system/sprites';
+  'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites';
 
 function sprite(prefix) {
   return {
