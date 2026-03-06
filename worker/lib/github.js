@@ -50,7 +50,7 @@ async function graphql(query, variables, token) {
 // ---------------------------------------------------------------------------
 
 const FLEET_ROSTER_QUERY = `
-query FleetRoster($repos: [String!]!) {
+query FleetRoster {
   ${BOT_REPOS.map((repo) => `
   ${repo.replace(/-/g, '_')}: repository(owner: "${ORG}", name: "${repo}") {
     name
