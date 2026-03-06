@@ -14,7 +14,6 @@ id      = "9437930ec52e453b87562a01dd62b246"
 binding = "ACTIVITY"
 id      = "7d60c30493e44bb2a5259f34c870c5cd"
 
-[[d1_databases]]
 binding      = "DB"
 database_name = "botfleet-activity"
 database_id  = "REPLACE_WITH_D1_DATABASE_ID"
