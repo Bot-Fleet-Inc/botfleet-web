@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Suspense } from 'react'
 import { Navbar } from './components/Navbar.jsx'
 import { Home } from './pages/Home.jsx'
@@ -19,11 +19,21 @@ function LoadingFallback() {
   )
 }
 
+/** Hide global Navbar on home route — HQRoom has its own embedded nav */
+function AppShell({ children }) {
+  const { pathname } = useLocation()
+  return (
+    <div className="app">
+      {pathname !== '/' && <Navbar />}
+      {children}
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="app">
-        <Navbar />
+      <AppShell>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -43,7 +53,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-      </div>
+      </AppShell>
     </BrowserRouter>
   )
 }

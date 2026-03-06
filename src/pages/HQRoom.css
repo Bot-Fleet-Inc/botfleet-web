@@ -1,0 +1,806 @@
+/**
+ * HQRoom — Full-viewport 2D Bot HQ landscape
+ * WEB-10 · Bot Fleet Inc
+ *
+ * Visual style: warm dark, pixel-art room
+ * Based on design-bot prototype: design-system/web/WEB-HQ-prototype.html
+ * Approved: 2026-03-06 by Jørgen
+ *
+ * Key rule: Logo sign + tagline LIVE INSIDE the room — not as traditional UI.
+ */
+
+/* ── Reset & scene root ───────────────────────────────────────────────── */
+
+.hq-room {
+  position: relative;
+  width: 100vw;
+  height: calc(100svh - var(--navbar-height, 52px));
+  min-height: 520px;
+  overflow: hidden;
+  image-rendering: pixelated;
+  background: #1A1510;
+  font-family: 'JetBrains Mono', monospace;
+  user-select: none;
+  /* Cover any parent Navbar by going full-viewport */
+  margin-top: 0;
+}
+
+/* ── CEILING ──────────────────────────────────────────────────────────── */
+
+.hq-ceiling {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: #0E0B08;
+  border-bottom: 2px solid #3D3428;
+  z-index: 1;
+}
+
+/* ── FLOOR ────────────────────────────────────────────────────────────── */
+
+.hq-floor {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100px;
+  background: #1A1510;
+  border-top: 3px solid #3D3428;
+  background-image:
+    repeating-linear-gradient(90deg, #221C15 0, #221C15 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(0deg,  #221C15 0, #221C15 1px, transparent 1px, transparent 28px);
+  z-index: 1;
+}
+
+.hq-baseboard {
+  position: absolute;
+  bottom: 100px; left: 0; right: 0;
+  height: 5px;
+  background: #6B4A20;
+  z-index: 2;
+}
+
+/* ── BACK WALL ────────────────────────────────────────────────────────── */
+
+.hq-wall {
+  position: absolute;
+  top: 52px; left: 0; right: 0; bottom: 100px;
+  background:
+    repeating-linear-gradient(180deg, #1A1510 0, #1A1510 13px, #201A14 13px, #201A14 14px);
+  z-index: 0;
+}
+
+/* ── ZONE DIVIDERS ────────────────────────────────────────────────────── */
+
+.hq-zone-div {
+  position: absolute;
+  top: 52px; bottom: 100px;
+  width: 4px;
+  background: linear-gradient(180deg, #3D3428, #2A2218, #3D3428);
+  z-index: 3;
+}
+
+/* ── CEILING LIGHTS ───────────────────────────────────────────────────── */
+
+.hq-ceiling-light {
+  position: absolute;
+  top: 52px;
+  height: 6px;
+  width: 44px;
+  background: #C8C8B0;
+  transform: translateX(-50%);
+  z-index: 6;
+}
+
+.hq-ceiling-glow {
+  position: absolute;
+  top: 58px;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(200,200,176,0.08) 0%, transparent 100%);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── PENDANT LAMP ─────────────────────────────────────────────────────── */
+
+.hq-pendant {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 28px;
+  background: #6B4A20;
+  transform: translateX(-50%);
+  z-index: 6;
+}
+
+.hq-pendant::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-top: 20px solid #FFB347;
+}
+
+.hq-lamp-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255,179,71,0.15), transparent 70%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ── SERVER RACK (zone 1 — far left) ─────────────────────────────────── */
+
+.hq-server-rack {
+  position: absolute;
+  left: 24px;
+  top: 62px;
+  bottom: 105px;
+  width: 72px;
+  background: #1C1A28;
+  border: 2px solid #3A3848;
+  z-index: 5;
+}
+
+.hq-rack-unit {
+  height: 20px;
+  border-bottom: 1px solid #2A283A;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  gap: 4px;
+}
+
+.hq-led {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.hq-led--green  { background: #7BC67E; }
+.hq-led--amber  { background: #FFB347; }
+.hq-led--teal   { background: #4ECDC4; }
+.hq-led--red    { background: #FF6B8A; }
+.hq-led--off    { background: #333; }
+
+/* ── NIGHT WINDOW ─────────────────────────────────────────────────────── */
+
+.hq-window {
+  position: absolute;
+  top: 68px;
+  width: 88px;
+  height: 72px;
+  background: #0A1226;
+  border: 5px solid #3D3428;
+  z-index: 8;
+}
+
+.hq-win-cross-h {
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 3px;
+  background: #3D3428;
+  transform: translateY(-50%);
+}
+
+.hq-win-cross-v {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 3px;
+  background: #3D3428;
+  transform: translateX(-50%);
+}
+
+.hq-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #DCDAA0;
+  border-radius: 50%;
+}
+
+.hq-moon {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #C4C396;
+  top: 6px;
+  right: 8px;
+}
+
+.hq-moon::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0A1226;
+  top: -2px;
+  right: -4px;
+}
+
+/* ── LOGO SIGN (on wall, center — Brand asset lives INSIDE the room) ─── */
+
+.hq-logo-sign {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(280px, 38vw, 480px);
+  padding: 14px 20px 12px;
+  background: #120F0C;
+  border: 2px solid #3D3428;
+  box-shadow:
+    0 0 0 1px #4ECDC4,
+    0 0 18px rgba(78,205,196,0.27),
+    inset 0 0 20px rgba(0,0,0,0.4);
+  text-align: center;
+  z-index: 10;
+}
+
+.hq-logo-sign__title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(9px, 1.5vw, 18px);
+  color: #F5EFE0;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(78,205,196,0.53);
+  line-height: 1.4;
+}
+
+.hq-logo-sign__tagline {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(6px, 0.9vw, 10px);
+  color: #FFB347;
+  margin-top: 8px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(255,179,71,0.4);
+}
+
+/* ── CHALKBOARD (left of logo — "Autonom. Omtrent._") ─────────────────── */
+
+.hq-chalkboard {
+  position: absolute;
+  top: 62px;
+  width: clamp(130px, 14vw, 190px);
+  padding: 8px 10px;
+  background: #1D3021;
+  border: 5px solid #5A3E20;
+  z-index: 10;
+}
+
+.hq-chalkboard__text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(5px, 0.75vw, 9px);
+  color: #C8E6C8;
+  letter-spacing: 0.5px;
+  line-height: 1.9;
+  text-shadow: 0 0 4px rgba(150,220,150,0.3);
+}
+
+.hq-chalkboard__cursor {
+  display: inline-block;
+  animation: blink-cursor 1.1s step-start infinite;
+  color: rgba(160,240,160,0.9);
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Chalk dust effect */
+.hq-chalkboard::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 10%; right: 10%;
+  height: 2px;
+  background: rgba(200, 220, 200, 0.12);
+}
+
+/* ── NOTICE BOARD / STATS (right of logo) ─────────────────────────────── */
+
+.hq-stats-board {
+  position: absolute;
+  top: 72px;
+  width: clamp(140px, 14vw, 200px);
+  background: #3D2A12;
+  border: 4px solid #6B4A20;
+  padding: 8px;
+  z-index: 10;
+}
+
+.hq-stats-board__label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: #FFB347;
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.hq-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+.hq-stat-note {
+  padding: 4px 3px;
+  text-align: center;
+}
+
+.hq-stat-note__val {
+  font-size: 11px;
+  font-weight: 700;
+  display: block;
+  line-height: 1.2;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.hq-stat-note__lbl {
+  font-size: 6px;
+  opacity: 0.8;
+  display: block;
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* ── WHITEBOARD (left zone) ───────────────────────────────────────────── */
+
+.hq-whiteboard {
+  position: absolute;
+  top: 72px;
+  width: clamp(110px, 12vw, 160px);
+  height: 120px;
+  background: #D8D4C0;
+  border: 5px solid #6B4A20;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.hq-wb-line {
+  height: 1px;
+  background: #B0AAA0;
+  margin: 5px 0;
+}
+
+.hq-wb-diagram {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.hq-wb-box {
+  flex: 1;
+  height: 16px;
+  border: 1px solid #888;
+  font-size: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  color: #333;
+}
+
+.hq-wb-arrow {
+  font-size: 9px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+/* ── STANDUP TABLE ────────────────────────────────────────────────────── */
+
+.hq-standup-table {
+  position: absolute;
+  bottom: 158px;
+  height: 14px;
+  background: linear-gradient(180deg, #8C6030 0%, #6B4020 50%, #4A2C10 100%);
+  z-index: 8;
+}
+
+/* ── STANDUP RING ─────────────────────────────────────────────────────── */
+
+.hq-standup-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed rgba(78,205,196,0.25);
+  background: transparent;
+  pointer-events: none;
+  z-index: 7;
+  animation: pulse-ring 4s ease-in-out infinite;
+}
+
+.hq-standup-ring--active {
+  border-color: rgba(78,205,196,0.6);
+  background: rgba(78,205,196,0.04);
+  box-shadow: 0 0 20px rgba(78,205,196,0.12);
+  animation: pulse-ring-active 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: 0.7; transform: translate(-50%, -50%) scale(1.03); }
+}
+
+@keyframes pulse-ring-active {
+  0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.04); }
+}
+
+.hq-standup-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: rgba(78,205,196,0.45);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* ── SOFA ─────────────────────────────────────────────────────────────── */
+
+.hq-sofa {
+  position: absolute;
+  bottom: 160px;
+  z-index: 8;
+}
+
+.hq-sofa__inner {
+  display: flex;
+  align-items: flex-end;
+}
+
+.hq-sofa__arm {
+  width: 14px;
+  height: 42px;
+  background: #382840;
+  border: 2px solid #4E3C5C;
+  border-radius: 2px 2px 0 0;
+  flex-shrink: 0;
+}
+
+.hq-sofa__body {}
+
+.hq-sofa__back {
+  height: 32px;
+  width: 220px;
+  background: #382840;
+  border-top: 2px solid #4E3C5C;
+  border-left: 2px solid #4E3C5C;
+  border-right: 2px solid #4E3C5C;
+}
+
+.hq-sofa__seat {
+  height: 22px;
+  display: flex;
+  width: 220px;
+}
+
+.hq-sofa__cushion {
+  flex: 1;
+  background: #4A3658;
+  border: 1px solid #382840;
+  border-top: 2px solid #5E4A6E;
+}
+
+/* ── BOOKSHELF ────────────────────────────────────────────────────────── */
+
+.hq-bookshelf {
+  position: absolute;
+  bottom: 100px;
+  width: 62px;
+  height: 180px;
+  background: #3A2810;
+  border: 2px solid #6B4A20;
+  z-index: 8;
+  overflow: hidden;
+}
+
+.hq-shelf-row {
+  height: 38px;
+  border-bottom: 2px solid #6B4A20;
+  display: flex;
+  align-items: flex-end;
+  padding: 2px;
+  gap: 2px;
+}
+
+.hq-shelf-row:last-child {
+  border-bottom: none;
+}
+
+.hq-book {
+  width: 8px;
+  border-radius: 0;
+  border-right: 1px solid rgba(0,0,0,0.3);
+}
+
+/* ── COFFEE TABLE ─────────────────────────────────────────────────────── */
+
+.hq-coffee-table {
+  position: absolute;
+  bottom: 155px;
+  height: 8px;
+  background: #7A5222;
+  border-top: 2px solid #A06828;
+  z-index: 9;
+}
+
+/* ── PLANT ────────────────────────────────────────────────────────────── */
+
+.hq-plant {
+  position: absolute;
+  z-index: 8;
+}
+
+.hq-plant__foliage {
+  width: 70px;
+  height: 60px;
+  margin-left: -15px;
+  background: radial-gradient(ellipse, #3C6E3C 30%, #285228 70%);
+  border-radius: 50% 60% 40% 70%;
+  margin-bottom: 2px;
+}
+
+.hq-plant__pot {
+  width: 40px;
+  height: 28px;
+  background: #5C3C18;
+  border-top: 3px solid #7A5222;
+}
+
+/* ── CTA DOOR ─────────────────────────────────────────────────────────── */
+
+.hq-cta {
+  position: absolute;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(60, 40, 100, 0.88);
+  border: 2px solid rgba(130, 90, 200, 0.5);
+  border-radius: 3px;
+  color: rgba(220, 200, 255, 0.95);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(6px, 0.85vw, 9px);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 16px rgba(100, 60, 200, 0.3);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.12s;
+  cursor: pointer;
+}
+
+.hq-cta:hover,
+.hq-cta:focus-visible {
+  background: rgba(80, 55, 140, 0.95);
+  border-color: rgba(160, 110, 240, 0.7);
+  box-shadow: 0 4px 28px rgba(100, 60, 200, 0.45);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.hq-cta:active {
+  transform: translateY(0);
+}
+
+/* ── NAV (in ceiling — fully inside the room) ─────────────────────────── */
+
+.hq-nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 28px;
+  background: rgba(14,11,8,0.94);
+  border-bottom: 1px solid #3D3428;
+  z-index: 100;
+}
+
+.hq-nav__wordmark {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #F5EFE0;
+  margin-right: 8px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.hq-nav__wordmark:hover {
+  color: #4ECDC4;
+}
+
+.hq-nav__link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #7A6E5C;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.hq-nav__link:hover,
+.hq-nav__link--active {
+  color: #4ECDC4;
+}
+
+.hq-nav__link--active {
+  border-bottom: 2px solid #4ECDC4;
+}
+
+.hq-nav__right {
+  margin-left: auto;
+  font-size: 10px;
+  color: #7A6E5C;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── BOT SLOTS ────────────────────────────────────────────────────────── */
+
+.hq-bot {
+  position: absolute;
+  bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+  cursor: pointer;
+  transition:
+    left   1.5s cubic-bezier(0.4, 0, 0.2, 1),
+    bottom 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hq-bot:hover {
+  transform: translateY(-4px);
+}
+
+.hq-bot__img {
+  width: clamp(48px, 6vw, 80px);
+  height: clamp(60px, 7.5vw, 100px);
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.65));
+  display: block;
+}
+
+.hq-bot:hover .hq-bot__img {
+  filter: drop-shadow(0 0 10px var(--bot-color)) drop-shadow(0 4px 8px rgba(0,0,0,0.65));
+}
+
+.hq-bot__name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--bot-color);
+  margin-top: 3px;
+  text-shadow: 0 0 6px var(--bot-color);
+  white-space: nowrap;
+}
+
+.hq-bot__shadow {
+  width: 50px;
+  height: 7px;
+  border-radius: 50%;
+  opacity: 0.2;
+  margin-top: 2px;
+  background: var(--bot-color);
+  filter: blur(3px);
+}
+
+/* ── SPEECH BUBBLES ───────────────────────────────────────────────────── */
+
+.hq-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #F5EFE0;
+  color: #0E0B08;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 5px 9px;
+  white-space: nowrap;
+  border: 1px solid #B0A888;
+  z-index: 30;
+  pointer-events: none;
+  animation: bubble-in 0.15s ease-out;
+}
+
+.hq-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #F5EFE0;
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Status dot on bot */
+.hq-bot__dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.5);
+}
+.hq-bot__dot[data-status="active"]  { background: #7BC67E; box-shadow: 0 0 5px #7BC67E; }
+.hq-bot__dot[data-status="blocked"] { background: #FF6B8A; box-shadow: 0 0 5px #FF6B8A; animation: blink-dot 1s step-start infinite; }
+.hq-bot__dot[data-status="idle"]    { background: #6B5A40; }
+.hq-bot__dot[data-status="planned"] { background: #5A4A30; }
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .hq-logo-sign {
+    width: clamp(220px, 70vw, 340px);
+  }
+
+  .hq-logo-sign__title {
+    font-size: clamp(7px, 2.4vw, 13px);
+  }
+
+  .hq-chalkboard {
+    display: none;
+  }
+
+  .hq-whiteboard {
+    width: 100px;
+  }
+
+  .hq-stats-board {
+    display: none;
+  }
+
+  .hq-sofa__back,
+  .hq-sofa__seat {
+    width: 160px;
+  }
+
+  .hq-server-rack {
+    display: none;
+  }
+
+  .hq-nav {
+    gap: 16px;
+    padding: 0 16px;
+  }
+
+  .hq-nav__link {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hq-whiteboard { display: none; }
+  .hq-bookshelf  { display: none; }
+
+  .hq-nav__link--optional {
+    display: none;
+  }
+}
