@@ -17,6 +17,7 @@ import { handleGetBots, handleGetBot }                         from './routes/bo
 import { handleGetEpics }                                      from './routes/epics.js';
 import { handleGetActivity, handlePostActivity }               from './routes/activity.js';
 import { handleStatus, handleGitHubRate, handleWorkersHealth, handleBotHealth } from './routes/status.js';
+import { handleGetStats }                                      from './routes/stats.js';
 import { handleOptions, jsonError }                            from './lib/cors.js';
 
 export default {
@@ -54,6 +55,11 @@ export default {
     // Route: POST /api/activity  (GitHub webhook receiver)
     if (method === 'POST' && path === '/api/activity') {
       return handlePostActivity(request, env, ctx, {});
+    }
+
+    // Route: GET /api/stats (notice board — live GitHub stats, KV cached 30 min)
+    if (method === 'GET' && path === '/api/stats') {
+      return handleGetStats(request, env);
     }
 
     // Route: GET /api/status (combined, legacy compat)

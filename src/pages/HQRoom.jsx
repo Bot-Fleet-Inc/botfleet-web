@@ -233,23 +233,29 @@ function BotSlot({ bot, status }) {
 }
 
 // ── Stats from /api/bots (or GitHub fallback) ────────────────────
+// ── Stats — notice board data from /api/stats (WEB-9) ───────────
 const FALLBACK_STATS = {
-  sprint: '3',
-  issues: '12',
-  commits: '1.4K',
-  uptime: '99.7',
-  deploys: '88',
-  closed: '247',
+  sprints:  3,
+  projects: 8,
+  issues:   120,
+  bots:     4,
+  commits:  142,
+  uptime:   '99.7',
 };
+
+function fmt(n) {
+  if (typeof n !== 'number') return String(n);
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
+  return String(n);
+}
 
 function useStats() {
   const [stats, setStats] = useState(FALLBACK_STATS);
   useEffect(() => {
-    fetch('/api/bots')
+    fetch('/api/stats')
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
-        if (!data) return;
-        if (data.stats) setStats({ ...FALLBACK_STATS, ...data.stats });
+        if (data?.stats) setStats({ ...FALLBACK_STATS, ...data.stats });
       })
       .catch(() => { /* use fallback */ });
   }, []);
@@ -292,34 +298,35 @@ function LogoSign() {
 }
 
 // ── Notice board ─────────────────────────────────────────────────
+// Stats fetched from /api/stats (WEB-9) — KV cached 30 min, static fallback
 function NoticeBoard({ stats }) {
   return (
-    <div className="hq-notice-board" aria-label="Status board">
+    <div className="hq-notice-board" aria-label="Status board — live GitHub stats">
       <div className="hq-notice-board__label">▸ STATUS BOARD ◂</div>
       <div className="hq-notice-board__grid">
         <div className="hq-stat-note hq-stat-note--yellow">
-          <span className="hq-stat-val">{stats.sprint}</span>
-          <span className="hq-stat-lbl">SPRINT</span>
+          <span className="hq-stat-val">🏃 {fmt(stats.sprints)}</span>
+          <span className="hq-stat-lbl">SPRINTS</span>
         </div>
         <div className="hq-stat-note hq-stat-note--teal">
-          <span className="hq-stat-val">{stats.issues}</span>
-          <span className="hq-stat-lbl">ISSUES</span>
+          <span className="hq-stat-val">📦 {fmt(stats.projects)}</span>
+          <span className="hq-stat-lbl">PROJECTS</span>
         </div>
         <div className="hq-stat-note hq-stat-note--green">
-          <span className="hq-stat-val">{stats.commits}</span>
-          <span className="hq-stat-lbl">COMMITS</span>
+          <span className="hq-stat-val">✅ {fmt(stats.issues)}</span>
+          <span className="hq-stat-lbl">CLOSED</span>
         </div>
         <div className="hq-stat-note hq-stat-note--purple">
-          <span className="hq-stat-val">{stats.uptime}</span>
-          <span className="hq-stat-lbl">UPTIME%</span>
+          <span className="hq-stat-val">🤖 {fmt(stats.bots)}</span>
+          <span className="hq-stat-lbl">BOTS</span>
         </div>
         <div className="hq-stat-note hq-stat-note--yellow">
-          <span className="hq-stat-val">{stats.deploys}</span>
-          <span className="hq-stat-lbl">DEPLOY</span>
+          <span className="hq-stat-val">💬 {fmt(stats.commits)}</span>
+          <span className="hq-stat-lbl">COMMITS</span>
         </div>
         <div className="hq-stat-note hq-stat-note--teal">
-          <span className="hq-stat-val">{stats.closed}</span>
-          <span className="hq-stat-lbl">CLOSED</span>
+          <span className="hq-stat-val">⚡ {stats.uptime}%</span>
+          <span className="hq-stat-lbl">UPTIME</span>
         </div>
       </div>
     </div>
