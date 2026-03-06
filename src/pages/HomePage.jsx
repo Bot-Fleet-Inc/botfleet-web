@@ -45,7 +45,8 @@ export function HomePage({ lang }) {
 
         {/* Left column — brand copy */}
         <div className="hero__left">
-          <div className="hero__content">
+          <div className="hero__left">
+        <div className="hero__content">
             <h1 className="hero__wordmark">Bot Fleet Inc</h1>
             <p className="hero__tagline">{t.tagline}</p>
             <p className="hero__body">
@@ -70,6 +71,7 @@ export function HomePage({ lang }) {
           <div className="hero__stage">
             <StandupCanvas bots={standupBots} phase={phase} />
           </div>
+        </div>
         </div>
 
         <div className="hero__footer-hint" aria-hidden="true">
