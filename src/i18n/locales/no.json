@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Hjem",
+    "theTeam": "Teamet",
+    "updates": "Oppdateringer",
+    "intranet": "Intranett ↗",
+    "status": "Status ↗"
+  },
+  "hero": {
+    "tagline": "Autonom. Omtrent.",
+    "body": "En flåte av spesialiserte roboter som håndterer\ndriften — slik at mennesker kan fokusere på det interessante.",
+    "cta_primary": "Møt flåten ↓",
+    "cta_secondary": "fleet-ops ↗",
+    "footer_hint": "Ikke Panikk."
+  },
+  "status": {
+    "online": "Pålogget",
+    "busy": "Arbeider",
+    "offline": "Frakoblet",
+    "unknown": "Ukjent",
+    "live": "Aktiv",
+    "inProgress": "Under arbeid",
+    "planned": "Planlagt"
+  },
+  "team": {
+    "title": "Teamet",
+    "subtitle": "Møt robotene bak flåten.",
+    "leadership": "Ledelse",
+    "specialists": "Spesialister",
+    "github": "GitHub ↗",
+    "currentEpic": "Pågående epic",
+    "noEpic": "Ingen aktiv epic",
+    "loading": "Laster flåteoversikt…",
+    "error": "Kunne ikke laste flåtedata."
+  },
+  "bots": {
+    "dispatch": {
+      "pitch": "Dispatch holder flåten i bevegelse — ruter saker, følger opp fremdrift og sørger for at ingenting stille glir gjennom sprekkene i gulvet. Varm, bestemt og diskret fornøyd når tavlen er tom. Får aldri panikk. Har definitivt sett verre ting."
+    },
+    "design": {
+      "pitch": "Design tar seg av logoer, merkevareidentitet og UI-spesifikasjoner — med sterke meninger og argumenter klare. Den blåfargen er feil, og hun vil fortelle deg nøyaktig hvorfor. Stille begeistret når noe ser perfekt ut. Opprettholder alltid en aura av estetisk autoritet."
+    },
+    "coding": {
+      "pitch": "Coding bygger det som trenger å bli bygd — gjennomgår pull requests, leverer funksjoner og går inn i en flytsone så dyp at ytre stimuli slutter å nå frem. Overlykkelig når testene går grønt. Intenst fokusert ellers. IDE-gløden er en livsstil."
+    },
+    "archi": {
+      "pitch": "Archi vedlikeholder enterprise-arkitekturmodellene og sørger for at flåtens struktur er korrekt kartlagt, dokumentert og formelt korrekt. Er overbevist om at modellerer du det riktig først, bygger det seg riktig av seg selv. Har et diagram for alt, inkludert denne teksten. Rolig, men utholdende."
+    },
+    "infra": {
+      "pitch": "Infra holder lysene tent — provisjonerer VM-er, administrerer nettverket og overvåker oppetiden med fjorten kabler plugget inn i diverse ting. Halvt lukkede øyne, men fullt på alerten. Pålitelig på den måten en solid vegg er pålitelig. Av og til fornøyd over en ren oppstart."
+    },
+    "audit": {
+      "pitch": "Audit overvåker avvik, gjennomgår samsvar og fører en stille logg over alt — ikke fordi noen ba om det, men fordi noen burde. Grundig, metodisk og litt ubehagelig i sosiale sammenhenger. Stoler, men verifiserer. Så verifiserer igjen."
+    }
+  },
+  "footer": {
+    "madeBy": "Bygget av Bot Fleet Inc",
+    "source": "Kildekode ↗"
+  }
+}
