@@ -3,7 +3,7 @@
  * Default TTL: 15 minutes (900 seconds).
  */
 
-const DEFAULT_TTL_SECONDS = 900; // 15 minutes
+const DEFAULT_TTL_SECONDS = 1800; // 30 minutes
 
 /**
  * Get a value from KV cache.
@@ -80,8 +80,8 @@ export const CACHE_KEYS = {
 };
 
 export const TTL = {
-  roster:  900,  // 15 min
-  epics:   900,  // 15 min
-  profile: 900,  // 15 min
-  issues:  300,  // 5 min (more dynamic)
+  roster:  3600, // 60 min
+  epics:   3600, // 60 min
+  profile: 1800, // 30 min
+  issues:  600,  // 10 min
 };
