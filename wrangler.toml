@@ -1,0 +1,17 @@
+name = "botfleet-web"
+compatibility_date = "2026-03-06"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "9437930ec52e453b87562a01dd62b246"
+
+[[kv_namespaces]]
+binding = "ACTIVITY"
+id = "7d60c30493e44bb2a5259f34c870c5cd"
+
+[vars]
+ENVIRONMENT = "production"
