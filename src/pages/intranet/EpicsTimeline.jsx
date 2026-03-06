@@ -1,165 +1,224 @@
-/**
- * EpicsTimeline — intranet.bot-fleet.org/epics
- * Horizontal right→left timeline of all executive board epics
- * Click epic → detail panel
- * WEB-5
- */
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { useEpics, STATIC_EPICS } from '../../hooks/useEpics.js'
-import './EpicsTimeline.css'
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useEpics } from '../../hooks/useEpics.js';
+import './EpicsTimeline.css';
 
-const LABEL_ENV_COLOR = {
-  'env:dev':   'var(--color-archi)',
-  'env:stage': 'var(--color-coding)',
-  'env:prod':  'var(--color-status-error)',
-}
+const LABEL_COLOR_MAP = {
+  'type:epic': null,         // don't badge this one
+  'priority:high':  '#F85149',
+  'priority:medium':'#E3B341',
+  'env:dev':        '#3FB950',
+  'env:stage':      '#58A6FF',
+  'env:prod':       '#F78166',
+};
 
-const LABEL_STATUS_COLOR = {
-  'status:done':        'var(--color-status-online)',
-  'status:in-progress': 'var(--color-coding)',
-  'status:blocked':     'var(--color-status-error)',
-  'status:planned':     'var(--color-text-dim)',
-}
-
-function getEnvLabel(labels = []) {
-  return labels.find(l => l.startsWith('env:')) ?? null
-}
-
-function getStatusLabel(labels = []) {
-  return labels.find(l => l.startsWith('status:')) ?? null
-}
-
-function EpicDetail({ epic, onClose }) {
-  const envLabel = getEnvLabel(epic.labels)
-  const statusLabel = getStatusLabel(epic.labels)
-
-  return (
-    <aside className="epic-detail" aria-label="Epic detail">
-      <button className="epic-detail__close" onClick={onClose} aria-label="Close">✕</button>
-      <header className="epic-detail__header">
-        <span className="epic-detail__num">#{epic.number}</span>
-        {envLabel && (
-          <span className="epic-detail__env-badge"
-            style={{ '--badge-color': LABEL_ENV_COLOR[envLabel] ?? 'var(--color-text-dim)' }}>
-            {envLabel}
-          </span>
-        )}
-      </header>
-      <h2 className="epic-detail__title">{epic.title}</h2>
-      {statusLabel && (
-        <div className="epic-detail__status"
-          style={{ '--status-color': LABEL_STATUS_COLOR[statusLabel] ?? 'var(--color-text-dim)' }}>
-          <span className="epic-detail__status-dot" />
-          {statusLabel.replace('status:', '')}
-        </div>
-      )}
-      <dl className="epic-detail__meta">
-        <dt>Created</dt>
-        <dd>{new Date(epic.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</dd>
-        {epic.closedAt && <><dt>Closed</dt><dd>{new Date(epic.closedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</dd></>}
-        {epic.linkedBots?.length > 0 && (
-          <>
-            <dt>Bots</dt>
-            <dd className="epic-detail__bots">
-              {epic.linkedBots.map(b => (
-                <Link key={b} to={`/intranet/bots/${b}`} className="epic-detail__bot-link">
-                  {b.replace('-bot', '')}
-                </Link>
-              ))}
-            </dd>
-          </>
-        )}
-      </dl>
-      <a href={epic.url} target="_blank" rel="noopener noreferrer" className="epic-detail__gh-link">
-        View on GitHub ↗
-      </a>
-    </aside>
-  )
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  });
 }
 
 export function EpicsTimeline() {
-  const { t } = useTranslation()
-  const { epics, loading, error } = useEpics()
-  const [selected, setSelected] = useState(null)
-  const displayEpics = loading ? STATIC_EPICS : epics
+  const { t } = useTranslation();
+  const { epics, loading, error } = useEpics();
+  const [selected, setSelected] = useState(null);
+  const [filter, setFilter] = useState('all'); // all | open | closed
 
-  // Sort newest → oldest (right→left on screen means index 0 = rightmost/newest)
-  const sorted = [...displayEpics].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  const filtered = epics.filter((e) => {
+    if (filter === 'open')   return e.state === 'OPEN';
+    if (filter === 'closed') return e.state === 'CLOSED';
+    return true;
+  });
+
+  // Sort: open first (by createdAt desc), then closed (by closedAt desc)
+  const sorted = [...filtered].sort((a, b) => {
+    if (a.state !== b.state) return a.state === 'OPEN' ? -1 : 1;
+    const aDate = a.state === 'OPEN' ? a.createdAt : (a.closedAt ?? a.updatedAt);
+    const bDate = b.state === 'OPEN' ? b.createdAt : (b.closedAt ?? b.updatedAt);
+    return new Date(bDate) - new Date(aDate);
+  });
+
+  const selectedEpic = selected !== null ? epics.find((e) => e.number === selected) : null;
 
   return (
-    <main className="epics-timeline-page">
-      <header className="epics-timeline-page__header">
-        <Link to="/intranet" className="epics-back">← Fleet ops</Link>
-        <h1 className="epics-timeline-page__title">Epics Timeline</h1>
-        <p className="epics-timeline-page__sub">
-          {loading ? 'Loading…' : `${displayEpics.length} epic${displayEpics.length !== 1 ? 's' : ''} — scroll right→left for oldest`}
-        </p>
-      </header>
+    <main className="epics-timeline">
+      <div className="epics-timeline__layout">
+        {/* ── Left panel: timeline ── */}
+        <section className="epics-timeline__panel" aria-label="Epics timeline">
+          <header className="epics-timeline__header">
+            <div>
+              <Link to="/intranet" className="epics-timeline__back">← Fleet overview</Link>
+              <h1 className="epics-timeline__title">Epics Timeline</h1>
+              <p className="epics-timeline__subtitle">
+                All executive board epics — open and completed.
+              </p>
+            </div>
 
-      <div className="epics-timeline-wrap">
-        {loading ? (
-          <span className="spinner" style={{ margin: '4rem auto', display: 'block', width: 16 }} />
-        ) : error ? (
-          <p className="epics-error">Failed to load epics: {error}</p>
-        ) : (
-          <div className="epics-timeline" role="list">
-            {/* Rail */}
-            <div className="epics-timeline__rail" aria-hidden="true" />
+            {/* Filter tabs */}
+            <div className="epics-timeline__filters" role="tablist" aria-label="Filter epics">
+              {['all', 'open', 'closed'].map((f) => (
+                <button
+                  key={f}
+                  role="tab"
+                  aria-selected={filter === f}
+                  className={`epics-timeline__filter-tab ${filter === f ? 'epics-timeline__filter-tab--active' : ''}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  <span className="epics-timeline__filter-count">
+                    {f === 'all' ? epics.length
+                      : f === 'open' ? epics.filter(e => e.state === 'OPEN').length
+                      : epics.filter(e => e.state === 'CLOSED').length}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </header>
 
-            {sorted.map((epic, i) => {
-              const envLabel = getEnvLabel(epic.labels)
-              const statusLabel = getStatusLabel(epic.labels)
-              const isOpen = epic.state === 'open'
-              const isSelected = selected?.number === epic.number
-              const staggerUp = i % 2 === 0
+          {loading && (
+            <div className="epics-timeline__loading">
+              <span className="spinner" /> Loading epics…
+            </div>
+          )}
+          {error && <p className="epics-timeline__error">{error}</p>}
+
+          {/* Timeline */}
+          <div className="epics-timeline__list" role="list">
+            {sorted.map((epic, idx) => {
+              const isOpen = epic.state === 'OPEN';
+              const isSelected = selected === epic.number;
+              const visibleLabels = epic.labels
+                .filter((l) => l.name !== 'type:epic' && LABEL_COLOR_MAP[l.name] !== null)
+                .slice(0, 3);
 
               return (
                 <div
                   key={epic.number}
-                  className={`epic-card${staggerUp ? ' epic-card--up' : ' epic-card--down'}${isSelected ? ' epic-card--selected' : ''}`}
                   role="listitem"
-                  style={{ '--epic-env-color': LABEL_ENV_COLOR[envLabel] ?? 'var(--color-coding)' }}
+                  className={`epics-timeline__item ${isOpen ? 'epics-timeline__item--open' : 'epics-timeline__item--closed'} ${isSelected ? 'epics-timeline__item--selected' : ''}`}
+                  onClick={() => setSelected(isSelected ? null : epic.number)}
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && setSelected(isSelected ? null : epic.number)}
+                  aria-selected={isSelected}
                 >
-                  {/* Connector dot on rail */}
-                  <div className="epic-card__dot" aria-hidden="true" />
+                  <div className="epics-timeline__item-track">
+                    <div className={`epics-timeline__dot epics-timeline__dot--${isOpen ? 'open' : 'closed'}`} />
+                    {idx < sorted.length - 1 && <div className="epics-timeline__line" />}
+                  </div>
 
-                  <button
-                    className="epic-card__btn"
-                    onClick={() => setSelected(isSelected ? null : epic)}
-                    aria-expanded={isSelected}
-                    aria-label={`Epic #${epic.number}: ${epic.title}`}
-                  >
-                    <span className="epic-card__num">#{epic.number}</span>
-                    <span className="epic-card__title">{epic.title}</span>
-                    <div className="epic-card__badges">
-                      {envLabel && (
-                        <span className="epic-card__badge"
-                          style={{ color: LABEL_ENV_COLOR[envLabel] ?? 'var(--color-text-dim)' }}>
-                          {envLabel}
-                        </span>
-                      )}
-                      {statusLabel && (
-                        <span className="epic-card__badge"
-                          style={{ color: LABEL_STATUS_COLOR[statusLabel] ?? 'var(--color-text-dim)' }}>
-                          {statusLabel.replace('status:', '')}
-                        </span>
-                      )}
+                  <div className="epics-timeline__item-body">
+                    <div className="epics-timeline__item-header">
+                      <span className="epics-timeline__item-number">#{epic.number}</span>
+                      <span className={`epics-timeline__status epics-timeline__status--${isOpen ? 'open' : 'closed'}`}>
+                        {isOpen ? 'Open' : 'Done'}
+                      </span>
                     </div>
-                    <span className="epic-card__date">
-                      {new Date(epic.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                    </span>
-                  </button>
+
+                    <h3 className="epics-timeline__item-title">{epic.title}</h3>
+
+                    <div className="epics-timeline__item-meta">
+                      <span className="epics-timeline__date">
+                        {isOpen
+                          ? `Started ${formatDate(epic.createdAt)}`
+                          : `Closed ${formatDate(epic.closedAt)}`
+                        }
+                      </span>
+
+                      {visibleLabels.map((l) => (
+                        <span
+                          key={l.name}
+                          className="epics-timeline__label"
+                          style={{
+                            color: LABEL_COLOR_MAP[l.name] ?? `#${l.color}`,
+                            borderColor: LABEL_COLOR_MAP[l.name] ?? `#${l.color}`,
+                          }}
+                        >
+                          {l.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              )
+              );
             })}
+
+            {!loading && sorted.length === 0 && (
+              <p className="epics-timeline__empty">No epics matching filter.</p>
+            )}
           </div>
+        </section>
+
+        {/* ── Right panel: detail ── */}
+        {selectedEpic && (
+          <aside className="epics-timeline__detail" aria-label="Epic detail">
+            <button
+              className="epics-timeline__detail-close"
+              onClick={() => setSelected(null)}
+              aria-label="Close detail"
+            >
+              ✕
+            </button>
+
+            <div className="epics-timeline__detail-header">
+              <span className="epics-timeline__item-number">#{selectedEpic.number}</span>
+              <span className={`epics-timeline__status epics-timeline__status--${selectedEpic.state === 'OPEN' ? 'open' : 'closed'}`}>
+                {selectedEpic.state === 'OPEN' ? 'Open' : 'Done'}
+              </span>
+            </div>
+
+            <h2 className="epics-timeline__detail-title">{selectedEpic.title}</h2>
+
+            <div className="epics-timeline__detail-dates">
+              <div>
+                <span className="epics-timeline__detail-label">Started</span>
+                <span>{formatDate(selectedEpic.createdAt)}</span>
+              </div>
+              {selectedEpic.closedAt && (
+                <div>
+                  <span className="epics-timeline__detail-label">Closed</span>
+                  <span>{formatDate(selectedEpic.closedAt)}</span>
+                </div>
+              )}
+            </div>
+
+            {selectedEpic.assignees?.length > 0 && (
+              <div className="epics-timeline__detail-assignees">
+                <span className="epics-timeline__detail-label">Assigned to</span>
+                <div className="epics-timeline__assignee-list">
+                  {selectedEpic.assignees.map((a) => (
+                    <div key={a.login} className="epics-timeline__assignee">
+                      <img src={a.avatarUrl} alt={a.login} width={24} height={24} />
+                      <span>{a.login}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedEpic.body && (
+              <div className="epics-timeline__detail-body">
+                <span className="epics-timeline__detail-label">Description</span>
+                <p className="epics-timeline__detail-text">
+                  {selectedEpic.body.replace(/\n+/g, ' ').slice(0, 400)}
+                  {selectedEpic.body.length > 400 && '…'}
+                </p>
+              </div>
+            )}
+
+            <a
+              href={selectedEpic.url}
+              className="btn btn-secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginTop: '1.5rem', display: 'inline-flex' }}
+            >
+              View on GitHub ↗
+            </a>
+          </aside>
         )}
       </div>
-
-      {/* Detail panel */}
-      {selected && <EpicDetail epic={selected} onClose={() => setSelected(null)} />}
     </main>
-  )
+  );
 }

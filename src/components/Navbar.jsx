@@ -39,14 +39,12 @@ export function Navbar() {
           </Link>
         </li>
         <li>
-          <a
-            href="https://intranet.bot-fleet.org"
-            className="navbar__link navbar__link--external"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/intranet"
+            className={`navbar__link navbar__link--external ${pathname.startsWith('/intranet') ? 'navbar__link--active' : ''}`}
           >
             {t('nav.intranet')}
-          </a>
+          </Link>
         </li>
         <li>
           <a
