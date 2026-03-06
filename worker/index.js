@@ -1,0 +1,62 @@
+/**
+ * Bot Fleet Web — Cloudflare Worker entry point.
+ *
+ * Routes:
+ *   /api/bots          → fleet roster
+ *   /api/bots/:name    → single bot profile
+ *   /api/epics         → executive epics + timeline
+ *   /api/activity      → activity feed (GET + POST webhook)
+ *   /*                 → static assets (Vite build)
+ */
+
+import { handleGetBots, handleGetBot }     from './routes/bots.js';
+import { handleGetEpics }                  from './routes/epics.js';
+import { handleGetActivity, handlePostActivity } from './routes/activity.js';
+import { handleOptions, jsonError }        from './lib/cors.js';
+
+export default {
+  async fetch(request, env, ctx) {
+    const url    = new URL(request.url);
+    const path   = url.pathname;
+    const method = request.method.toUpperCase();
+
+    // Handle CORS preflight for all API routes
+    if (method === 'OPTIONS' && path.startsWith('/api/')) {
+      return handleOptions(request);
+    }
+
+    // Route: GET /api/bots
+    if (method === 'GET' && path === '/api/bots') {
+      return handleGetBots(request, env, ctx, {});
+    }
+
+    // Route: GET /api/bots/:name
+    const botMatch = path.match(/^\/api\/bots\/([^/]+)$/);
+    if (method === 'GET' && botMatch) {
+      return handleGetBot(request, env, ctx, { name: botMatch[1] });
+    }
+
+    // Route: GET /api/epics
+    if (method === 'GET' && path === '/api/epics') {
+      return handleGetEpics(request, env, ctx, {});
+    }
+
+    // Route: GET /api/activity
+    if (method === 'GET' && path === '/api/activity') {
+      return handleGetActivity(request, env, ctx, {});
+    }
+
+    // Route: POST /api/activity  (GitHub webhook receiver)
+    if (method === 'POST' && path === '/api/activity') {
+      return handlePostActivity(request, env, ctx, {});
+    }
+
+    // 404 for unknown /api/* routes
+    if (path.startsWith('/api/')) {
+      return jsonError('Not found', 404, request);
+    }
+
+    // Fall through to static assets
+    return env.ASSETS.fetch(request);
+  },
+};
