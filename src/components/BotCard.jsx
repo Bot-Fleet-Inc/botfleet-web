@@ -1,91 +1,88 @@
-/**
- * BotCard — /the-team bot card component
- * Spec: WEB-2-bot-card-spec.md (design-bot · 2026-03-06)
- */
-import { useRef, useCallback } from 'react'
-import './BotCard.css'
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { BotSprite } from './BotSprite.jsx';
+import { StatusBadge } from './StatusDot.jsx';
+import './BotCard.css';
 
-const STATUS_LABEL = {
-  en: { online: 'Online', working: 'Working', idle: 'Idle', offline: 'Offline', loading: '...' },
-  no: { online: 'Online', working: 'Jobber', idle: 'Inaktiv', offline: 'Offline', loading: '...' },
-}
+const BOT_COLOR_MAP = {
+  'dispatch-bot': 'dispatch',
+  'design-bot':   'design',
+  'coding-bot':   'coding',
+  'archi-bot':    'archi',
+  'infra-bot':    'infra',
+};
 
-export function BotCard({ bot, lang = 'no', variant = 'default' }) {
-  const imgRef = useRef(null)
+const GITHUB_USERS = {
+  'dispatch-bot': 'botfleet-dispatch',
+  'design-bot':   'botfleet-design',
+  'coding-bot':   'botfleet-coding',
+};
 
-  const handleMouseEnter = useCallback(() => {
-    if (!imgRef.current) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    imgRef.current.src = bot.sprite.idle
-  }, [bot.sprite.idle])
-
-  const handleMouseLeave = useCallback(() => {
-    if (!imgRef.current) return
-    setTimeout(() => { if (imgRef.current) imgRef.current.src = bot.sprite.rest }, 0)
-  }, [bot.sprite.rest])
-
-  const status = bot.status ?? 'offline'
-  const statusLabel = STATUS_LABEL[lang]?.[status] ?? status
+export function BotCard({ bot }) {
+  const { t } = useTranslation();
+  const colorKey = BOT_COLOR_MAP[bot.name] ?? 'coding';
+  const pitchKey = bot.name.replace('-bot', '');
+  const pitch = t(`bots.${pitchKey}.pitch`, { defaultValue: bot.role });
+  const githubUser = bot.githubUser ?? GITHUB_USERS[bot.name];
 
   return (
     <article
-      className={`bot-card bot-card--${variant}`}
-      data-bot={bot.id}
-      data-status={status}
-      style={{ '--bot-color': bot.color }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className="bot-card"
+      data-bot={colorKey}
+      data-status={bot.status ?? 'unknown'}
+      aria-label={bot.displayName}
     >
       <div className="bot-card__avatar">
-        <img
-          ref={imgRef}
-          src={bot.sprite.rest}
-          data-rest={bot.sprite.rest}
+        <BotSprite
+          botName={bot.name}
           alt={bot.displayName}
-          className="bot-card__sprite pixel-art"
           width={120}
           height={150}
-          onError={e => { e.target.style.display = 'none' }}
+          className="bot-card__sprite"
         />
-        <div className="bot-card__avatar-fallback" aria-hidden="true">
-          {bot.displayName[0]}
-        </div>
       </div>
 
       <div className="bot-card__body">
         <header className="bot-card__header">
           <h2 className="bot-card__name">{bot.displayName}</h2>
-          <span className="bot-card__status-badge" aria-label={statusLabel}>
-            <span className="bot-card__status-dot" aria-hidden="true" />
-            {statusLabel}
-          </span>
+          <StatusBadge status={bot.status ?? 'unknown'} className="bot-card__status" />
         </header>
 
-        <p className="bot-card__role">{bot.role[lang]}</p>
+        <p className="bot-card__role">{bot.role}</p>
+
+        <blockquote className="bot-card__pitch">{pitch}</blockquote>
 
         {bot.currentEpic && (
           <p className="bot-card__epic">
-            ↳ {bot.currentEpic.title}
+            <span className="bot-card__epic-label">{t('team.currentEpic')}:</span>{' '}
+            <a
+              href={bot.currentEpic.url}
+              className="bot-card__epic-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {bot.currentEpic.title}
+            </a>
           </p>
         )}
 
-        <blockquote className="bot-card__pitch">
-          {bot.pitch[lang]}
-        </blockquote>
-
         <footer className="bot-card__footer">
-          <a
-            href={`https://github.com/${bot.githubUser}`}
-            className="bot-card__link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${bot.displayName} on GitHub`}
-          >
-            GitHub ↗
-          </a>
+          {githubUser && (
+            <a
+              href={`https://github.com/${githubUser}`}
+              className="bot-card__link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('team.github')}
+            </a>
+          )}
+          <Link to={`/bots/${bot.name}`} className="bot-card__link bot-card__link--profile">
+            Profile →
+          </Link>
           <span className="bot-card__color-swatch" aria-hidden="true" />
         </footer>
       </div>
     </article>
-  )
+  );
 }

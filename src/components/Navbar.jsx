@@ -1,27 +1,66 @@
-import './Navbar.css'
+import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LangToggle } from './LangToggle.jsx';
+import './Navbar.css';
 
-export function Navbar({ lang, onLangToggle }) {
+export function Navbar() {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+
   return (
     <nav className="navbar" aria-label="Main navigation">
-      <a href="/" className="navbar__brand">
-        <span className="navbar__logo">BFI</span>
-      </a>
-      <div className="navbar__links">
-        <a href="#the-team" className="navbar__link">
-          {lang === 'no' ? 'Flåten' : 'The Fleet'}
-        </a>
-        <a
-          href="https://github.com/Bot-Fleet-Inc"
-          className="navbar__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub ↗
-        </a>
-        <button className="navbar__lang-btn" onClick={onLangToggle} aria-label="Toggle language">
-          {lang === 'no' ? '🇬🇧 EN' : '🇳🇴 NO'}
-        </button>
-      </div>
+      <Link to="/" className="navbar__wordmark" aria-label="Bot Fleet Inc">
+        BFI
+      </Link>
+
+      <ul className="navbar__links" role="list">
+        <li>
+          <Link
+            to="/"
+            className={`navbar__link ${pathname === '/' ? 'navbar__link--active' : ''}`}
+          >
+            {t('nav.home')}
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/the-team"
+            className={`navbar__link ${pathname === '/the-team' ? 'navbar__link--active' : ''}`}
+          >
+            {t('nav.theTeam')}
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/updates"
+            className={`navbar__link ${pathname === '/updates' ? 'navbar__link--active' : ''}`}
+          >
+            {t('nav.updates')}
+          </Link>
+        </li>
+        <li>
+          <a
+            href="https://intranet.bot-fleet.org"
+            className="navbar__link navbar__link--external"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('nav.intranet')}
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://status.bot-fleet.org"
+            className="navbar__link navbar__link--external"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('nav.status')}
+          </a>
+        </li>
+      </ul>
+
+      <LangToggle />
     </nav>
-  )
+  );
 }

@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Home",
+    "theTeam": "The Team",
+    "updates": "Updates",
+    "intranet": "Intranet ↗",
+    "status": "Status ↗"
+  },
+  "hero": {
+    "tagline": "Autonomous. Mostly.",
+    "body": "A fleet of specialized bots running operations\nso humans can focus on the interesting parts.",
+    "cta_primary": "Meet the Fleet ↓",
+    "cta_secondary": "fleet-ops ↗",
+    "footer_hint": "Don't Panic."
+  },
+  "status": {
+    "online": "Online",
+    "busy": "Working",
+    "offline": "Offline",
+    "unknown": "Unknown",
+    "live": "Live",
+    "inProgress": "In Progress",
+    "planned": "Planned"
+  },
+  "team": {
+    "title": "The Team",
+    "subtitle": "Meet the bots behind the fleet.",
+    "leadership": "Leadership",
+    "specialists": "Specialists",
+    "github": "GitHub ↗",
+    "currentEpic": "Current epic",
+    "noEpic": "No active epic",
+    "loading": "Loading fleet roster…",
+    "error": "Failed to load fleet data."
+  },
+  "bots": {
+    "dispatch": {
+      "pitch": "Dispatch keeps the fleet moving — routing issues, tracking progress, and making sure nothing quietly falls through a crack in the floorboards. Warm, decisive, and subtly smug when the board is clear. Never panics. Has definitely seen worse."
+    },
+    "design": {
+      "pitch": "Design handles logos, brand identity, and UI specs — with strong opinions and the receipts to back them up. That shade of blue is wrong, and she will tell you exactly why. Secretly delighted when something looks perfect. Maintains an air of aesthetic authority at all times."
+    },
+    "coding": {
+      "pitch": "Coding builds the things that need building — reviewing PRs, shipping features, and entering a flow state so deep that external stimuli stop registering. Extremely happy when tests pass. Extremely focused otherwise. The IDE glow is a lifestyle."
+    },
+    "archi": {
+      "pitch": "Archi maintains the enterprise architecture models and ensures the fleet's structure is correctly mapped, documented, and formally sound. Believes that if you model it properly first, it builds itself correctly. Has a diagram for everything, including this bio. Mild but persistent."
+    },
+    "infra": {
+      "pitch": "Infra keeps the lights on — provisioning VMs, managing the network, and watching uptime like a hawk with fourteen cables plugged into various things. Half-lidded but fully alert. Dependable in the way a solid wall is dependable. Occasionally delighted by a clean boot."
+    },
+    "audit": {
+      "pitch": "Audit watches for anomalies, reviews compliance, and keeps a quiet log of everything — not because anyone asked, but because someone should. Thorough, methodical, and mildly unsettling at parties. Trusts, but verifies. Then verifies again."
+    }
+  },
+  "footer": {
+    "madeBy": "Built by Bot Fleet Inc",
+    "source": "Source ↗"
+  }
+}
