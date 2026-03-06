@@ -1,0 +1,126 @@
+/**
+ * Bot Fleet Inc — Design Tokens
+ * Source: Bot-Fleet-Inc/design-bot · design-system/tokens/bot-fleet-design-tokens.css
+ * WEB-2 · design-bot · 2026-03-06
+ */
+
+:root {
+  /* ═══════════════════════════════════════
+     COLORS — Base
+  ═══════════════════════════════════════ */
+  --color-bg:              #0D1117;
+  --color-surface:         #161B22;
+  --color-surface-raised:  #21262D;
+  --color-border:          #30363D;
+  --color-border-subtle:   #21262D;
+  --color-text:            #E6EDF3;
+  --color-text-dim:        #8B949E;
+
+  /* ═══════════════════════════════════════
+     COLORS — Bot Signature
+  ═══════════════════════════════════════ */
+  --color-dispatch: #58A6FF;
+  --color-design:   #F78166;
+  --color-archi:    #3FB950;
+  --color-coding:   #E3B341;
+  --color-infra:    #BC8CFF;
+
+  /* ═══════════════════════════════════════
+     COLORS — Status
+  ═══════════════════════════════════════ */
+  --color-status-online:  #3FB950;
+  --color-status-busy:    #E3B341;
+  --color-status-offline: #6E7681;
+  --color-status-error:   #F85149;
+
+  /* ═══════════════════════════════════════
+     TYPOGRAPHY
+  ═══════════════════════════════════════ */
+  --font-display: 'Press Start 2P', monospace;
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', monospace;
+
+  /* ═══════════════════════════════════════
+     SPACING (4px base grid)
+  ═══════════════════════════════════════ */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ═══════════════════════════════════════
+     BORDERS
+  ═══════════════════════════════════════ */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* ═══════════════════════════════════════
+     SHADOWS
+  ═══════════════════════════════════════ */
+  --shadow-bevel: inset 1px 1px 0px rgba(255,255,255,0.15),
+                  inset -1px -1px 0px rgba(0,0,0,0.4);
+  --shadow-pixel: 2px 2px 0px rgba(0,0,0,0.8);
+
+  /* ═══════════════════════════════════════
+     ANIMATION
+  ═══════════════════════════════════════ */
+  --transition-smooth: 150ms ease;
+}
+
+/* ═══════════════════════════════════════
+   GLOBAL BASE
+═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════
+   IMAGE RENDERING — Pixel Art
+═══════════════════════════════════════ */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ═══════════════════════════════════════
+   SCROLLBAR — Retro
+═══════════════════════════════════════ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-dim); }
+
+/* ═══════════════════════════════════════
+   SPINNER
+═══════════════════════════════════════ */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  background: var(--color-coding);
+  animation: pixel-spin 0.8s steps(4) infinite;
+}
+@keyframes pixel-spin {
+  0%   { clip-path: inset(0 50% 50% 0); }
+  25%  { clip-path: inset(0 0 50% 50%); }
+  50%  { clip-path: inset(50% 0 0 50%); }
+  75%  { clip-path: inset(50% 50% 0 0); }
+  100% { clip-path: inset(0 50% 50% 0); }
+}
