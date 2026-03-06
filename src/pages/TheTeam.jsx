@@ -1,43 +1,94 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BotCard } from '../components/BotCard.jsx';
-import { ExcalidrawViewer } from '../components/ExcalidrawViewer.jsx';
+import { BotSprite } from '../components/BotSprite.jsx';
+import { FleetDiagram } from '../components/FleetDiagram.jsx';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
 import './TheTeam.css';
 
-// Org chart structure
-const ORG_CHART = {
-  ceo: {
-    name: 'Jørgen',
-    role: 'Founder & CEO',
-    emoji: '👤',
-    githubUser: 'jorgen-fleet-boss',
-    status: 'online',
-    isHuman: true,
-  },
-  leadership: ['dispatch-bot', 'archi-bot'],
-  specialists: ['design-bot', 'coding-bot', 'infra-bot'],
-  future: ['audit-bot'],
+const R2_SPRITE = 'https://pub-9d8a85e5e17847949d36335948eeaee0.r2.dev/sprites';
+
+// Correct hierarchy per WEB-2 / issue #21:
+//   Jørgen
+//   ├── Dispatch Bot   (leadership)
+//   └── Audit Bot      (leadership, planned)
+//       ├── Design Bot (specialist)
+//       └── Coding Bot (specialist)
+const HIERARCHY = {
+  leadership: ['dispatch-bot', 'audit-bot'],
+  specialists: ['design-bot', 'coding-bot'],   // reports to audit-bot
 };
+
+function JørgenNode() {
+  return (
+    <div className="org-chart__node org-chart__node--human" aria-label="Jørgen — Founder & CEO">
+      <span className="org-chart__human-avatar" aria-hidden="true">JØ</span>
+      <span className="org-chart__node-name">Jørgen</span>
+      <span className="org-chart__node-role">Founder &amp; CEO</span>
+    </div>
+  );
+}
+
+function BotNode({ bot }) {
+  const isPlanned = bot.status === 'planned';
+  const colorKey  = bot.name.replace('-bot', '');
+
+  if (isPlanned) {
+    return (
+      <div
+        className="org-chart__node org-chart__node--bot org-chart__node--planned"
+        data-bot={colorKey}
+        aria-label={`${bot.displayName} — coming soon`}
+      >
+        <div className="org-chart__sprite-wrap">
+          <span className="org-chart__planned-badge">Planlagt</span>
+          <span className="org-chart__emoji" aria-hidden="true">{bot.emoji}</span>
+        </div>
+        <span className="org-chart__node-name">{bot.displayName}</span>
+        <span className="org-chart__node-role">{bot.role?.split('—')[0].trim()}</span>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      to={`/bots/${bot.name}`}
+      className="org-chart__node org-chart__node--bot"
+      data-bot={colorKey}
+      aria-label={`View ${bot.displayName} profile`}
+    >
+      <div className="org-chart__sprite-wrap">
+        <BotSprite botName={bot.name} alt="" width={56} height={70} className="org-chart__sprite" />
+      </div>
+      <span className="org-chart__node-name">{bot.displayName}</span>
+      <span className="org-chart__node-role">{bot.role?.split('—')[0].trim()}</span>
+    </Link>
+  );
+}
 
 export function TheTeam() {
   const { t } = useTranslation();
   const { bots, loading, error } = useFleet();
-  const displayBots = loading ? STATIC_FLEET : bots;
 
-  const getBotByName = (name) =>
-    displayBots.find((b) => b.name === name) ?? {
-      name,
-      displayName: name.replace('-bot', '').charAt(0).toUpperCase() + name.replace('-bot', '').slice(1),
-      emoji: '🤖',
-      role: '—',
-      status: 'unknown',
-      currentEpic: null,
-      currentIssues: [],
-    };
+  // Use live data; fall back to static only when loading
+  const liveBots = loading ? STATIC_FLEET : bots;
 
-  const leadershipBots = ORG_CHART.leadership.map(getBotByName);
-  const specialistBots = ORG_CHART.specialists.map(getBotByName);
+  // Build bot lookup — keyed by bot name
+  const byName = Object.fromEntries(liveBots.map(b => [b.name, b]));
+
+  // Only include bots present in API response or static fallback
+  const leadershipBots = HIERARCHY.leadership
+    .map(name => byName[name])
+    .filter(Boolean);
+
+  const specialistBots = HIERARCHY.specialists
+    .map(name => byName[name])
+    .filter(Boolean);
+
+  // All displayable bots for cards section (exclude planned)
+  const cardBots = [...leadershipBots, ...specialistBots].filter(
+    b => b.status !== 'planned',
+  );
 
   return (
     <main className="the-team">
@@ -47,62 +98,36 @@ export function TheTeam() {
         <p className="the-team__subtitle">{t('team.subtitle')}</p>
       </header>
 
-      {/* ── Org Chart visual ── */}
+      {/* ── Org Chart ── */}
       <section className="org-chart" aria-label="Organisation chart">
-        {/* CEO */}
+        {/* Row 1: CEO */}
         <div className="org-chart__tier org-chart__tier--ceo">
-          <div className="org-chart__node org-chart__node--human">
-            <span className="org-chart__emoji">{ORG_CHART.ceo.emoji}</span>
-            <span className="org-chart__node-name">{ORG_CHART.ceo.name}</span>
-            <span className="org-chart__node-role">{ORG_CHART.ceo.role}</span>
-          </div>
+          <JørgenNode />
         </div>
 
         <div className="org-chart__connector" aria-hidden="true" />
 
-        {/* Leadership tier */}
+        {/* Row 2: Leadership */}
         <div className="org-chart__tier org-chart__tier--leadership">
-          {leadershipBots.map((bot) => (
-            <Link
-              key={bot.name}
-              to={`/bots/${bot.name}`}
-              className="org-chart__node org-chart__node--bot"
-              data-bot={bot.name.replace('-bot', '')}
-              aria-label={`View ${bot.displayName} profile`}
-            >
-              <span className="org-chart__emoji">{bot.emoji}</span>
-              <span className="org-chart__node-name">{bot.displayName}</span>
-              <span className="org-chart__node-role">{bot.role.split('—')[0].trim()}</span>
-            </Link>
+          {leadershipBots.map(bot => (
+            <BotNode key={bot.name} bot={bot} />
           ))}
         </div>
 
-        <div className="org-chart__connector" aria-hidden="true" />
+        <div className="org-chart__connector org-chart__connector--right" aria-hidden="true" />
 
-        {/* Specialist tier */}
+        {/* Row 3: Specialists (under audit-bot) */}
         <div className="org-chart__tier org-chart__tier--specialists">
-          {specialistBots.map((bot) => (
-            <Link
-              key={bot.name}
-              to={`/bots/${bot.name}`}
-              className="org-chart__node org-chart__node--bot"
-              data-bot={bot.name.replace('-bot', '')}
-              aria-label={`View ${bot.displayName} profile`}
-            >
-              <span className="org-chart__emoji">{bot.emoji}</span>
-              <span className="org-chart__node-name">{bot.displayName}</span>
-              <span className="org-chart__node-role">{bot.role.split('—')[0].trim()}</span>
-            </Link>
+          {specialistBots.map(bot => (
+            <BotNode key={bot.name} bot={bot} />
           ))}
         </div>
       </section>
 
-      {/* ── Excalidraw org chart diagram ── */}
-      <section className="the-team__diagram" aria-label="Fleet architecture diagram">
-        <h2 className="the-team__section-title" style={{ marginBottom: 'var(--space-4)' }}>
-          Fleet Diagram
-        </h2>
-        <ExcalidrawViewer slug="orgchart" height={360} title="Bot Fleet Org Chart · design-bot" />
+      {/* ── Fleet Diagram (SVG from R2, inline fallback) ── */}
+      <section className="the-team__diagram" aria-label="Fleet diagram">
+        <h2 className="the-team__section-title">Fleet Diagram</h2>
+        <FleetDiagram height={300} />
       </section>
 
       {/* ── Status ── */}
@@ -112,27 +137,26 @@ export function TheTeam() {
           {t('team.loading')}
         </div>
       )}
-      {error && (
+      {error && !loading && (
         <p className="the-team__error" role="alert">
-          {t('team.error')} (showing cached data)
+          {t('team.error')} (viser bufret data)
         </p>
       )}
 
-      {/* ── Leadership cards ── */}
+      {/* ── Bot cards ── */}
       <section className="the-team__section" aria-label={t('team.leadership')}>
         <h2 className="the-team__section-title">{t('team.leadership')}</h2>
         <div className="the-team__grid the-team__grid--leadership">
-          {leadershipBots.map((bot) => (
+          {leadershipBots.filter(b => b.status !== 'planned').map(bot => (
             <BotCard key={bot.name} bot={bot} />
           ))}
         </div>
       </section>
 
-      {/* ── Specialist cards ── */}
       <section className="the-team__section" aria-label={t('team.specialists')}>
         <h2 className="the-team__section-title">{t('team.specialists')}</h2>
         <div className="the-team__grid">
-          {specialistBots.map((bot) => (
+          {specialistBots.map(bot => (
             <BotCard key={bot.name} bot={bot} />
           ))}
         </div>
