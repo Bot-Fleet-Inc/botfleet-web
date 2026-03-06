@@ -1,9 +1,9 @@
-/* WEB-9: Standup canvas */
+/* StandupCanvas — bot landscape for homepage hero (WEB-26) */
 
 .standup-canvas {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 4px;
@@ -20,7 +20,23 @@
   background-size: 40px 40px;
 }
 
-/* Standup circle */
+/* Room labels */
+.standup-canvas__room {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--color-text-dim);
+  opacity: 0.4;
+  pointer-events: none;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.standup-canvas__room--hq      { top: 0.5rem; left: 0.75rem; opacity: 0.6; font-size: 9px; }
+.standup-canvas__room--standup { top: 28%; left: 35%; }
+.standup-canvas__room--lounge  { bottom: 15%; right: 10%; }
+
+/* Standup circle indicator */
 .standup-canvas__circle {
   position: absolute;
   border: 1px dashed rgba(0, 200, 100, 0.4);
@@ -35,18 +51,6 @@
   50%       { opacity: 1;   }
 }
 
-/* Design-bot notice */
-.standup-canvas__notice {
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.75rem;
-  font-size: 9px;
-  color: var(--color-text-muted);
-  opacity: 0.5;
-  font-family: var(--font-mono);
-  pointer-events: none;
-}
-
 /* ─── Bot avatar ─────────────────────────────────────────────────────── */
 
 .bot-avatar {
@@ -56,56 +60,67 @@
   align-items: center;
   gap: 2px;
   cursor: default;
-  transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-              top  1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    left 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    top  1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bot-avatar__sprite-wrap {
+  position: relative;
+  width: 40px;
+  height: 50px;
 }
 
 .bot-avatar__sprite {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid var(--bot-color, var(--color-border));
-  background: var(--color-surface);
-  display: flex;
+  width: 40px;
+  height: 50px;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* Emoji fallback */
+.bot-avatar__emoji-fallback {
+  width: 40px;
+  height: 50px;
+  display: none;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  position: relative;
-  transition: border-color 0.3s;
-}
-
-.bot-avatar--active  .bot-avatar__sprite { border-color: #00c864; }
-.bot-avatar--blocked .bot-avatar__sprite { border-color: #ff4040; }
-.bot-avatar--idle    .bot-avatar__sprite { border-color: #ffaa00; }
-
-.bot-avatar__emoji {
-  line-height: 1;
-}
-
-.bot-avatar__name {
-  font-size: 9px;
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  white-space: nowrap;
+  font-size: 22px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
 }
 
 /* Status dot */
 .bot-avatar__dot {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2px;
+  right: 2px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  border: 1px solid var(--color-bg, #0d0d0d);
+  border: 1px solid var(--color-surface, #0d0d0d);
 }
 
 .bot-avatar__dot[data-status="active"]  { background: #00c864; }
-.bot-avatar__dot[data-status="blocked"] { background: #ff4040; }
+.bot-avatar__dot[data-status="blocked"] { background: #ff4040; animation: pulse-dot 1s ease-in-out infinite; }
 .bot-avatar__dot[data-status="idle"]    { background: #ffaa00; }
-.bot-avatar__dot[data-status="unknown"] { background: #888; }
+.bot-avatar__dot[data-status="loading"],
+.bot-avatar__dot[data-status="unknown"] { background: #555; }
 
-/* Issue bubble */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
+
+.bot-avatar__name {
+  font-size: 8px;
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Issue bubble — shown during standup */
 .bot-avatar__issue {
   position: absolute;
   top: -14px;
