@@ -12,6 +12,7 @@
 import { handleGetBots, handleGetBot }     from './routes/bots.js';
 import { handleGetEpics }                  from './routes/epics.js';
 import { handleGetActivity, handlePostActivity } from './routes/activity.js';
+import { handleStatus }                    from './routes/status.js';
 import { handleOptions, jsonError }        from './lib/cors.js';
 
 export default {
@@ -39,6 +40,11 @@ export default {
     // Route: GET /api/epics
     if (method === 'GET' && path === '/api/epics') {
       return handleGetEpics(request, env, ctx, {});
+    }
+
+    // Route: GET /api/status
+    if (method === 'GET' && path === '/api/status') {
+      return handleStatus(request, env, ctx, {});
     }
 
     // Route: GET /api/activity
