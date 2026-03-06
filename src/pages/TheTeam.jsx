@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BotCard } from '../components/BotCard.jsx';
 import { BotSprite } from '../components/BotSprite.jsx';
-import { FleetDiagram } from '../components/FleetDiagram.jsx';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
 import './TheTeam.css';
 
@@ -127,7 +126,6 @@ export function TheTeam() {
       {/* ── Fleet Diagram (SVG from R2, inline fallback) ── */}
       <section className="the-team__diagram" aria-label="Fleet diagram">
         <h2 className="the-team__section-title">Fleet Diagram</h2>
-        <FleetDiagram height={300} />
       </section>
 
       {/* ── Status ── */}
