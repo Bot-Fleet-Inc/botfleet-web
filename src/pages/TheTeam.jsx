@@ -123,10 +123,6 @@ export function TheTeam() {
         </div>
       </section>
 
-      {/* ── Fleet Diagram (SVG from R2, inline fallback) ── */}
-      <section className="the-team__diagram" aria-label="Fleet diagram">
-        <h2 className="the-team__section-title">Fleet Diagram</h2>
-      </section>
 
       {/* ── Status ── */}
       {loading && (
