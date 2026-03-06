@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BotCard } from '../components/BotCard.jsx';
+import { ExcalidrawViewer } from '../components/ExcalidrawViewer.jsx';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
 import './TheTeam.css';
 
@@ -61,12 +63,17 @@ export function TheTeam() {
         {/* Leadership tier */}
         <div className="org-chart__tier org-chart__tier--leadership">
           {leadershipBots.map((bot) => (
-            <div key={bot.name} className="org-chart__node org-chart__node--bot"
-              data-bot={bot.name.replace('-bot', '')}>
+            <Link
+              key={bot.name}
+              to={`/bots/${bot.name}`}
+              className="org-chart__node org-chart__node--bot"
+              data-bot={bot.name.replace('-bot', '')}
+              aria-label={`View ${bot.displayName} profile`}
+            >
               <span className="org-chart__emoji">{bot.emoji}</span>
               <span className="org-chart__node-name">{bot.displayName}</span>
               <span className="org-chart__node-role">{bot.role.split('—')[0].trim()}</span>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -75,14 +82,27 @@ export function TheTeam() {
         {/* Specialist tier */}
         <div className="org-chart__tier org-chart__tier--specialists">
           {specialistBots.map((bot) => (
-            <div key={bot.name} className="org-chart__node org-chart__node--bot"
-              data-bot={bot.name.replace('-bot', '')}>
+            <Link
+              key={bot.name}
+              to={`/bots/${bot.name}`}
+              className="org-chart__node org-chart__node--bot"
+              data-bot={bot.name.replace('-bot', '')}
+              aria-label={`View ${bot.displayName} profile`}
+            >
               <span className="org-chart__emoji">{bot.emoji}</span>
               <span className="org-chart__node-name">{bot.displayName}</span>
               <span className="org-chart__node-role">{bot.role.split('—')[0].trim()}</span>
-            </div>
+            </Link>
           ))}
         </div>
+      </section>
+
+      {/* ── Excalidraw org chart diagram ── */}
+      <section className="the-team__diagram" aria-label="Fleet architecture diagram">
+        <h2 className="the-team__section-title" style={{ marginBottom: 'var(--space-4)' }}>
+          Fleet Diagram
+        </h2>
+        <ExcalidrawViewer slug="orgchart" height={360} title="Bot Fleet Org Chart · design-bot" />
       </section>
 
       {/* ── Status ── */}

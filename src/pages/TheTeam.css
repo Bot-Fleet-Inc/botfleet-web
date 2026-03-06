@@ -61,8 +61,18 @@
   background: var(--color-surface-raised);
   min-width: 120px;
   text-align: center;
-  transition: border-color var(--tx-fast);
+  transition: border-color var(--tx-fast), box-shadow var(--tx-fast);
   position: relative;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.org-chart__node--bot:hover,
+.org-chart__node--bot:focus-visible {
+  border-color: var(--color-text-muted);
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-border);
+  outline: none;
+  transform: translateY(-1px);
 }
 
 .org-chart__node--bot::before {
