@@ -193,11 +193,13 @@
 /* ── Two-column hero grid ── */
 .hero {
   display: grid !important;
+  min-height: 100svh;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr auto;
   grid-template-areas:
     "left right"
     "footer footer";
+  align-items: center;
 }
 
 .hero__left {
@@ -236,4 +238,11 @@
       "right"
       "footer" !important;
   }
+}
+
+/* Larger sprites in standup canvas */
+.hero__stage .bot-avatar__sprite,
+.hero__stage .bot-avatar__sprite-wrap {
+  width: 60px !important;
+  height: 75px !important;
 }
