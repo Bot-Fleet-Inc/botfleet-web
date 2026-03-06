@@ -1,7 +1,7 @@
 /**
  * HomePage — bot-fleet.org
  * Two-column hero: left = brand copy, right = StandupCanvas (live bot landscape)
- * Spec: WEB-2-homepage-hero-spec.md + WEB-26 dispatch-bot spec (2026-03-06)
+ * Spec: WEB-2-homepage-hero-spec.md + WEB-26
  */
 import { BotCard } from '../components/BotCard.jsx'
 import { useBots } from '../hooks/useBots.js'
@@ -17,7 +17,7 @@ const COPY = {
     cta2: 'fleet-ops ↗',
     teamHeading: 'Flåten',
     teamSub: 'Spesialiserte bots. Én felles flyt.',
-    footerHint: "Ikke få panikk.",
+    footerHint: 'Ikke få panikk.',
     lastUpdated: 'Sist oppdatert',
   },
   en: {
@@ -33,7 +33,7 @@ const COPY = {
 }
 
 export function HomePage({ lang }) {
-  const t = COPY[lang]
+  const t = COPY[lang] ?? COPY.no
   const { bots, lastUpdated } = useBots()
   const { phase, standupBots } = useStandup(bots)
 
@@ -43,10 +43,9 @@ export function HomePage({ lang }) {
       {/* ═══ HERO ═══════════════════════════════════════ */}
       <section className="hero" aria-label="Bot Fleet Inc — Homepage Hero">
 
-        {/* Left column — brand copy */}
+        {/* Left column */}
         <div className="hero__left">
-          <div className="hero__left">
-        <div className="hero__content">
+          <div className="hero__content">
             <h1 className="hero__wordmark">Bot Fleet Inc</h1>
             <p className="hero__tagline">{t.tagline}</p>
             <p className="hero__body">
@@ -71,7 +70,6 @@ export function HomePage({ lang }) {
           <div className="hero__stage">
             <StandupCanvas bots={standupBots} phase={phase} />
           </div>
-        </div>
         </div>
 
         <div className="hero__footer-hint" aria-hidden="true">
