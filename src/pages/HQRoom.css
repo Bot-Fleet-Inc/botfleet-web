@@ -776,12 +776,13 @@
   backdrop-filter: blur(4px);
 }
 .hq-nav__logo {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: #F5EFE0;
-  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  image-rendering: pixelated;
   margin-right: 8px;
   flex-shrink: 0;
+  line-height: 0;
 }
 .hq-nav__links {
   display: flex;
@@ -936,7 +937,7 @@
   .hq-nav { gap: 14px; padding: 0 12px; }
   .hq-nav__links { gap: 14px; }
   .hq-nav__link  { font-size: 9px; }
-  .hq-nav__logo  { font-size: 10px; }
+  .hq-nav__logo svg { width: 28px; height: 28px; }
 }
 
 @media (max-width: 480px) {

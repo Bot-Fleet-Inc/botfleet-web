@@ -543,7 +543,19 @@ export function HQRoom() {
 
       {/* ═══ EMBEDDED NAV (replaces global Navbar on homepage) ═══ */}
       <nav className="hq-nav" aria-label="Main navigation">
-        <span className="hq-nav__logo" aria-hidden="true">BFI</span>
+        <Link to="/" className="hq-nav__logo" aria-label="Bot Fleet Inc">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" shapeRendering="crispEdges">
+            <rect width="36" height="36" fill="#F0A030"/>
+            <rect x="8"  y="8"  width="4" height="4" fill="#1A1510"/>
+            <rect x="12" y="12" width="4" height="4" fill="#1A1510"/>
+            <rect x="16" y="16" width="4" height="4" fill="#1A1510"/>
+            <rect x="12" y="20" width="4" height="4" fill="#1A1510"/>
+            <rect x="8"  y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="20" y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="24" y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="28" y="24" width="4" height="4" fill="#1A1510"/>
+          </svg>
+        </Link>
         <div className="hq-nav__links">
           <Link to="/"          className="hq-nav__link hq-nav__link--active">Hjem</Link>
           <Link to="/the-team"  className="hq-nav__link">Teamet</Link>
