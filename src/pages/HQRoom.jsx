@@ -19,6 +19,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
+import WallKanban from '../components/WallKanban.jsx';
 import './HQRoom.css';
 
 // ── R2 sprite base ───────────────────────────────────────────────
@@ -419,18 +420,9 @@ export function HQRoom() {
       {/* ▶ CHALKBOARD — "Autonom. Omtrent._" on the wall, not external UI */}
       <Chalkboard />
 
-      {/* Whiteboard — workflow diagram */}
-      <div className="hq-whiteboard" aria-label="Whiteboard">
-        <div className="hq-wb-diagram">
-          <div className="hq-wb-box" style={{ background: '#AAAACC' }}>PLAN</div>
-          <div className="hq-wb-arrow">→</div>
-          <div className="hq-wb-box" style={{ background: '#AACCAA' }}>RUN</div>
-          <div className="hq-wb-arrow">→</div>
-          <div className="hq-wb-box" style={{ background: '#CCAAAA' }}>DONE</div>
-        </div>
-        <div className="hq-wb-line" />
-        <div className="hq-wb-line" />
-        <div className="hq-wb-line" />
+      {/* Whiteboard — live Kanban board (WEB-11) */}
+      <div className="hq-whiteboard" aria-label="Project board">
+        <WallKanban />
       </div>
 
       {/* Standup table */}
