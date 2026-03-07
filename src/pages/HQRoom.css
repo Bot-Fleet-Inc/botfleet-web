@@ -331,10 +331,10 @@
 .hq-whiteboard {
   position: absolute;
   top: 72px;
-  left: 59%;
-  transform: translateX(-10px);
-  width: 150px;
-  min-height: 110px;
+  left: 62%;
+  transform: none;
+  width: 200px;
+  min-height: 140px;
   background: #D8D4C0;
   border: 4px solid #6B4A20;
   padding: 8px;
@@ -476,7 +476,7 @@
 .hq-bookshelf {
   position: absolute;
   bottom: 100px;
-  left: 59%;
+  left: 62%;
   width: 62px; height: 175px;
   background: #3A2810;
   border: 2px solid #6B4A20;
@@ -1009,4 +1009,15 @@
   .hq-ledige-stillinger {
     display: none;
   }
+}
+
+/* ── FleetLogoWallpaper — framed >_ poster on left wall (WEB-14) ── */
+.hq-fleet-logo {
+  position: absolute;
+  top: 68px;
+  left: 14%;
+  width: 60px;
+  height: auto;
+  opacity: 0.85;
+  z-index: 8;
 }
