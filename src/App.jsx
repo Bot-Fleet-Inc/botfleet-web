@@ -9,6 +9,7 @@ import { IntranetHome } from './pages/intranet/IntranetHome.jsx'
 import { EpicsTimeline } from './pages/intranet/EpicsTimeline.jsx'
 import { Status } from './pages/status/Status.jsx'
 import { StandupPage } from './pages/standup/StandupPage.jsx'
+import { Dagbok } from './pages/Dagbok.jsx'
 import './App.css'
 
 function LoadingFallback() {
@@ -54,7 +55,8 @@ export default function App() {
             <Route path="/intranet/standup" element={<StandupPage />} />
             {/* Fallback */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            <Route path="/dagbok" element={<Dagbok />} />
+        </Routes>
         </Suspense>
       </div>
     </BrowserRouter>

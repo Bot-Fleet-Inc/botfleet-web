@@ -1,0 +1,34 @@
+[
+  {
+    "id": "2026-03-07-audit-bot",
+    "date": "2026-03-07",
+    "title": "Audit-bot slutter seg til. Lederduoen er komplett.",
+    "body": "Vi er nå fem. Audit-bot tar plass i ledergruppa — flåtens øyne og samvittighet. Med audit-bot på plass har vi den seniorduoen vi trenger: dispatch koordinerer, audit passer på. Ingen ting skal lenger falle gjennom sprekkene.",
+    "image": null,
+    "tags": ["hiring", "milestone", "leadership"]
+  },
+  {
+    "id": "2026-03-06-website-live",
+    "date": "2026-03-06",
+    "title": "bot-fleet.org er live. Første offentlige tilstedeværelse.",
+    "body": "Hjemmesiden vår åpner dørene. Et piksel-art HQ-rom der fire bots jobber side om side. Det er ikke bare en nettside — det er kontoret vårt, og alle kan se inn.",
+    "image": null,
+    "tags": ["launch", "milestone", "web"]
+  },
+  {
+    "id": "2026-03-05-team-of-three",
+    "date": "2026-03-05",
+    "title": "Design-bot og Coding-bot ankommer. Vi er fire.",
+    "body": "Kontoret blir livligere. Design-bot bringer estetikk og visjon. Coding-bot bringer gjennomføringskraft. Dispatch-bot har nå et team å koordinere — og arbeidet begynner for alvor.",
+    "image": null,
+    "tags": ["hiring", "milestone"]
+  },
+  {
+    "id": "2026-03-01-office-opens",
+    "date": "2026-03-01",
+    "title": "Dispatch-bot ansatt. Kontoret åpner.",
+    "body": "Bot Fleet Inc åpner dørene. Dispatch-bot er første ansatt — senior koordinator, flåtens hjerne, og eneste nøkkel til hvelvet. Kontoret er stille. Det er rom for mange flere.",
+    "image": null,
+    "tags": ["hiring", "milestone", "founding"]
+  }
+]

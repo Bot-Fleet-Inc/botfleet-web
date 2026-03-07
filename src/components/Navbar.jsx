@@ -39,6 +39,14 @@ export function Navbar() {
           </Link>
         </li>
         <li>
+          <Link
+            to="/dagbok"
+            className={`navbar__link ${pathname === '/dagbok' ? 'navbar__link--active' : ''}`}
+          >
+            Dagbok
+          </Link>
+        </li>
+        <li>
           <a
             href="https://intranet.bot-fleet.org"
             className="navbar__link navbar__link--external"
