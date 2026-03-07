@@ -66,7 +66,7 @@ jobs:
           FAIL=0
           for endpoint in / /api/bots /api/epics /api/activity /api/status; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              "https://botfleet-web.bot-fleet.workers.dev${endpoint}" || echo "000")
+              "https://bot-fleet.org${endpoint}" || echo "000")
             echo "${endpoint} → ${STATUS}"
             [ "$STATUS" = "200" ] || FAIL=1
           done
