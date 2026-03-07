@@ -58,6 +58,14 @@
   line-height: 1;
 }
 
+/* ── Mid mode — In Progress only ────────────────────────────────────────── */
+
+.wk-mid {
+  padding: 3px 4px;
+  gap: 3px;
+  overflow-y: auto;
+}
+
 /* ── Full Kanban mode ───────────────────────────────────────────────────── */
 
 .wk-full {

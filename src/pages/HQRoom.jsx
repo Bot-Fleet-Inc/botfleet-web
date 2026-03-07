@@ -274,7 +274,8 @@ function LogoSign() {
   return (
     <div className="hq-logo-sign" aria-label="Bot Fleet Inc">
       <div className="hq-logo-sign__title">BOT FLEET INC</div>
-      <div className="hq-logo-sign__sub">EST. 2025</div>
+      <div className="hq-logo-sign__tagline">Autonom. Omtrent.</div>
+      <div className="hq-logo-sign__sub">EST. 2026</div>
     </div>
   );
 }

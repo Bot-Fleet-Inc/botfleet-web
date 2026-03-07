@@ -41,7 +41,8 @@ const BOT_DISPLAY_NAMES = {
 };
 
 const COLUMNS = ['Planned', 'In Progress', 'Blocked', 'Done'];
-const COMPACT_WIDTH  = 1200;
+const COMPACT_WIDTH  = 900;   // ≤900px: single card (min)
+const MID_WIDTH      = 1200;  // 900–1200px: In Progress only (mid)
 const COMPACT_HEIGHT = 700;
 const DONE_MAX = 4;
 
@@ -168,9 +169,7 @@ export default function WallKanban() {
   const [epics, setEpics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCompact, setIsCompact] = useState(
-    window.innerWidth <= COMPACT_WIDTH || window.innerHeight <= COMPACT_HEIGHT
-  );
+  const [isCompact, setIsCompact] = useState(false); // kept for legacy compat
   const containerRef = useRef(null);
 
   // Fetch epics on mount
@@ -198,9 +197,29 @@ export default function WallKanban() {
     return () => { cancelled = true; };
   }, []);
 
-  // Resize listener → compact/full switch
+  // mode: 'compact' (single card) | 'mid' (In Progress only) | 'full' (all columns)
+  const [mode, setMode] = useState(() => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (w <= COMPACT_WIDTH || h <= COMPACT_HEIGHT) return 'compact';
+    if (w <= MID_WIDTH) return 'mid';
+    return 'full';
+  });
+
+  // Resize listener → mode switch
   const checkSize = useCallback(() => {
-    setIsCompact(window.innerWidth <= COMPACT_WIDTH || window.innerHeight <= COMPACT_HEIGHT);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (w <= COMPACT_WIDTH || h <= COMPACT_HEIGHT) {
+      setMode('compact');
+      setIsCompact(true);
+    } else if (w <= MID_WIDTH) {
+      setMode('mid');
+      setIsCompact(false);
+    } else {
+      setMode('full');
+      setIsCompact(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -233,13 +252,28 @@ export default function WallKanban() {
     );
   }
 
-  if (isCompact) {
-    // Compact: single hottest card
+  if (mode === 'compact') {
+    // Min: single hottest card
     return (
       <div className="wk-root wk-compact" ref={containerRef}>
         <div className="wk-compact-label">EPICS</div>
         {hottest ? (
           <EpicCard epic={hottest} compact />
+        ) : (
+          <div className="wk-empty">No active epics</div>
+        )}
+      </div>
+    );
+  }
+
+  if (mode === 'mid') {
+    // Mid: In Progress column only
+    const inProgress = byStatus['In Progress'] ?? [];
+    return (
+      <div className="wk-root wk-mid" ref={containerRef}>
+        <div className="wk-compact-label">IN PROGRESS</div>
+        {inProgress.length > 0 ? (
+          inProgress.map((epic) => <EpicCard key={epic.id} epic={epic} compact />)
         ) : (
           <div className="wk-empty">No active epics</div>
         )}
