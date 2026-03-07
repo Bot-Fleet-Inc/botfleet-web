@@ -253,15 +253,15 @@ function Chalkboard() {
   }, []);
 
   return (
-    <div className="hq-chalkboard" aria-label="Chalkboard: Autonom. Omtrent.">
-      <div className="hq-chalkboard__header">// tagline</div>
+    <div className="hq-chalkboard" aria-label="Chalkboard">
+      <div className="hq-chalkboard__header">// status</div>
       <div className="hq-chalkboard__main">
-        Autonom. Omtrent.
+        fleet online
         <span className="hq-chalkboard__cursor" aria-hidden="true">
           {cursor ? '_' : '\u00A0'}
         </span>
       </div>
-      <div className="hq-chalkboard__sub">&gt; 5 bots. ~0 incidents.</div>
+      <div className="hq-chalkboard__sub">&gt; 4 bots. ~0 incidents.</div>
       <div className="hq-chalkboard__lines" aria-hidden="true">
         <span /><span /><span />
       </div>

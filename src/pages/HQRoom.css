@@ -822,30 +822,27 @@
 /* ══════════════════════════════════════════════════════════════
    PRIORITY-BASED COLLAPSE — no overlapping elements ever
    Priority: 1=logo, 2=bots, 3=status board, 4=kanban, 5=ledige, 6=decor
+   Only collapse at genuinely narrow widths — Kanban manages itself internally.
    ══════════════════════════════════════════════════════════════ */
 
-/* ≤1500px — hide low-priority decorations first (priority 6) */
-@media (max-width: 1500px) {
+/* ≤860px — hide low-priority decorations (priority 6) */
+@media (max-width: 860px) {
   .hq-bookshelf,
   .hq-pendant,
   .hq-lamp-glow,
-  .hq-coffee-machine { display: none; }
-}
-
-/* ≤1350px — hide Ledige stillinger (priority 5) */
-@media (max-width: 1350px) {
-  .hq-ledige-stillinger { display: none; }
-}
-
-/* ≤1200px — collapse Kanban to compact (handled by WallKanban internally) */
-/* ≤1100px — hide Kanban entirely (priority 4) */
-@media (max-width: 1100px) {
-  .hq-whiteboard { display: none; }
+  .hq-coffee-machine,
   .hq-standup-table { display: none; }
 }
 
-/* ≤900px — hide status board (priority 3), hide remaining decor */
-@media (max-width: 900px) {
+/* ≤800px — hide Ledige stillinger (priority 5) */
+@media (max-width: 800px) {
+  .hq-ledige-stillinger { display: none; }
+}
+
+/* Kanban (priority 4): WallKanban handles compact/mid/full internally — never fully hidden here */
+
+/* ≤700px — hide status board (priority 3), remaining decor */
+@media (max-width: 700px) {
   .hq-notice-board { display: none; }
   .hq-plant,
   .hq-sofa,
@@ -952,8 +949,8 @@
 .hq-ledige-stillinger {
   position: absolute;
   top: 72px;
-  right: 35%;
-  width: 148px;
+  right: 2%;
+  width: 140px;
   background: #F5F0C0;
   border: 2px solid #D4C840;
   padding: 8px 10px 10px;
