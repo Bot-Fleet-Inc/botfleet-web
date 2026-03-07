@@ -7,9 +7,25 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  guard:
     runs-on: ubuntu-latest
-    name: Deploy
+    name: Guard — no placeholders
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for placeholder values
+        run: |
+          if grep -rn "REPLACE_WITH_\|YOUR_.*_HERE\|TODO: REPLACE" \
+            --include="*.toml" --include="*.js" --include="*.ts" \
+            --include="*.jsx" --include="*.tsx" --include="*.json" .; then
+            echo "❌ Found placeholder value(s) — fix before merging"
+            exit 1
+          fi
+          echo "✅ No placeholders found"
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    needs: guard
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,9 +34,35 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        if: github.ref == 'refs/heads/main'
+      - name: Smoke test
+        run: |
+          sleep 15
+          FAIL=0
+          for endpoint in / /api/bots /api/epics /api/activity /api/status; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              "https://botfleet-web.bot-fleet.workers.dev${endpoint}" || echo "000")
+            echo "${endpoint} → ${STATUS}"
+            [ "$STATUS" = "200" ] || FAIL=1
+          done
+          [ "$FAIL" = "0" ] && echo "✅ Smoke tests passed" || exit 1
