@@ -270,12 +270,28 @@ function Chalkboard() {
 }
 
 // ── Logo sign — INSIDE the room on the back wall ─────────────────
+const SUBTITLES = [
+  'Vi er ikke perfekte. Vi er konsistente.',
+  'Fem roboter. Ett mål. Omtrent der.',
+  'Stort sett ufarlig. Alltid i gang.',
+];
+
+function pickSubtitle() {
+  const key = 'bfi_subtitle_idx';
+  const last = parseInt(document.cookie.split('; ').find(r => r.startsWith(key + '='))?.split('=')[1] ?? '-1', 10);
+  let next;
+  do { next = Math.floor(Math.random() * SUBTITLES.length); } while (next === last && SUBTITLES.length > 1);
+  document.cookie = `${key}=${next};path=/;max-age=86400`;
+  return SUBTITLES[next];
+}
+
 function LogoSign() {
+  const [subtitle] = useState(() => pickSubtitle());
   return (
     <div className="hq-logo-sign" aria-label="Bot Fleet Inc">
       <div className="hq-logo-sign__title">BOT FLEET INC</div>
       <div className="hq-logo-sign__tagline">Autonom. Omtrent.</div>
-      <div className="hq-logo-sign__sub">EST. 2026</div>
+      <div className="hq-logo-sign__sub">{subtitle}</div>
     </div>
   );
 }
