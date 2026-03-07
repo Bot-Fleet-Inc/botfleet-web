@@ -50,11 +50,16 @@ jobs:
         with:
           name: dist
           path: dist/
+      - name: Install wrangler
+        run: npm install -g wrangler
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.71.0"
+          packageManager: "npm"
+          preCommands: echo "wrangler ready" 
       - name: Smoke test
         run: |
           sleep 15
