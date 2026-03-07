@@ -13,7 +13,7 @@
  *  ✓ Bots reposition based on live GitHub status
  *  ✓ Hover → speech bubble with bot personality
  *  ✓ "Meet the Fleet" CTA in lounge corner
- *  ✓ Mobile responsive (scales down at <768px)
+ *  ✓ Mobile responsive (scales down at <768px) — WEB-15: 7-section flow
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -331,17 +331,209 @@ function StandupCircle() {
   );
 }
 
+// ── Mobile: Bot card for grid ────────────────────────────────────
+function MobileBotCard({ bot, status }) {
+  const [imgError, setImgError] = useState(false);
+  const isOnline = status && status !== 'offline' && status !== 'planned';
+
+  return (
+    <Link to={bot.link} className="mob-bot-card" style={{ '--bot-color': bot.color }}>
+      <div className="mob-bot-card__sprite-wrap">
+        {imgError ? (
+          <div className="mob-bot-card__fallback" style={{ background: bot.color }} />
+        ) : (
+          <img
+            src={`${SPRITE_BASE}/${bot.key}-rest.png`}
+            alt={`${bot.displayName} bot`}
+            className="mob-bot-card__sprite pixel-art"
+            onError={() => setImgError(true)}
+          />
+        )}
+      </div>
+      <div className="mob-bot-card__info">
+        <div className="mob-bot-card__name">{bot.displayName}</div>
+        <div className="mob-bot-card__status-row">
+          <span
+            className="mob-bot-card__dot"
+            style={{ background: isOnline ? '#7BC67E' : '#484F58' }}
+          />
+          <span className="mob-bot-card__status-text">
+            {isOnline ? 'online' : 'offline'}
+          </span>
+        </div>
+        <div className="mob-bot-card__tagline">{bot.bubbles[0]}</div>
+      </div>
+    </Link>
+  );
+}
+
+// ── Mobile layout — 7-section document-flow ──────────────────────
+function MobileLayout({ statusByName, epics, activity }) {
+  const KANBAN_COLS = [
+    { label: 'TODO',     key: 'Planned' },
+    { label: 'IN PROG',  key: 'In Progress' },
+    { label: 'BLOCKED',  key: 'Blocked' },
+    { label: 'DONE',     key: 'Done' },
+  ];
+
+  return (
+    <div className="mob-layout">
+
+      {/* 1. Nav bar */}
+      <nav className="hq-nav" aria-label="Main navigation">
+        <Link to="/" className="hq-nav__logo" aria-label="Bot Fleet Inc">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" shapeRendering="crispEdges">
+            <rect width="36" height="36" fill="#F0A030"/>
+            <rect x="8"  y="8"  width="4" height="4" fill="#1A1510"/>
+            <rect x="12" y="12" width="4" height="4" fill="#1A1510"/>
+            <rect x="16" y="16" width="4" height="4" fill="#1A1510"/>
+            <rect x="12" y="20" width="4" height="4" fill="#1A1510"/>
+            <rect x="8"  y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="20" y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="24" y="24" width="4" height="4" fill="#1A1510"/>
+            <rect x="28" y="24" width="4" height="4" fill="#1A1510"/>
+          </svg>
+        </Link>
+        <div className="hq-nav__links">
+          <Link to="/"          className="hq-nav__link hq-nav__link--active">Hjem</Link>
+          <Link to="/the-team"  className="hq-nav__link">Teamet</Link>
+          <Link to="/updates"   className="hq-nav__link">Oppdateringer</Link>
+          <a
+            href="https://intranet.bot-fleet.org"
+            className="hq-nav__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Intranett ↗
+          </a>
+          <Link to="/status" className="hq-nav__link">Status ↗</Link>
+        </div>
+        <div className="hq-nav__right">EN</div>
+      </nav>
+
+      {/* 2. Hero */}
+      <section className="mob-hero" aria-label="Bot Fleet Inc">
+        <div className="mob-hero__title">BOT FLEET INC</div>
+        <div className="mob-hero__tagline">Autonom. Omtrent.</div>
+        <div className="mob-hero__sub">EST. 2026</div>
+      </section>
+
+      {/* 3. Fleet Status Terminal */}
+      <section className="mob-terminal" aria-label="Fleet status">
+        <div className="mob-terminal__header">// fleet status</div>
+        {BOTS.map((bot) => {
+          const status = statusByName[bot.apiName];
+          const isOnline = status && status !== 'offline' && status !== 'planned';
+          return (
+            <div key={bot.id} className="mob-terminal__row">
+              <span className="mob-terminal__dot" style={{ background: bot.color }} />
+              <span className="mob-terminal__name">{bot.displayName}</span>
+              <span className="mob-terminal__incidents">
+                {isOnline ? '> 0 incidents' : '> offline'}
+              </span>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* 4. Kanban Summary */}
+      <section className="mob-kanban" aria-label="Kanban summary">
+        {KANBAN_COLS.map((col) => {
+          const count = epics.filter((e) => e.status === col.key).length;
+          const isActive = col.key === 'In Progress';
+          return (
+            <div
+              key={col.key}
+              className={`mob-kanban__col${isActive ? ' mob-kanban__col--active' : ''}`}
+            >
+              <div className="mob-kanban__count">{count}</div>
+              <div className="mob-kanban__label">{col.label}</div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* 5. Bot Grid */}
+      <section className="mob-bot-grid" aria-label="Bot roster">
+        {BOTS.map((bot) => (
+          <MobileBotCard
+            key={bot.id}
+            bot={bot}
+            status={statusByName[bot.apiName]}
+          />
+        ))}
+      </section>
+
+      {/* 6. Activity Feed */}
+      <section className="mob-activity" aria-label="Recent activity">
+        <div className="mob-activity__header">// activity</div>
+        {activity.length > 0
+          ? activity.map((post, i) => (
+              <div key={i} className="mob-activity__line">
+                &gt; {post.title}
+              </div>
+            ))
+          : <div className="mob-activity__line">&gt; no recent activity</div>
+        }
+      </section>
+
+      {/* 7. Footer */}
+      <footer className="mob-footer">
+        Bot Fleet Inc © 2026 · Autonom. Omtrent.
+      </footer>
+
+    </div>
+  );
+}
+
 // ── Main HQRoom component ────────────────────────────────────────
 export function HQRoom() {
   const { bots, loading } = useFleet();
   const displayBots = loading ? STATIC_FLEET : bots;
   const stats = useStats();
 
+  // Mobile breakpoint detection
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+  const [activity, setActivity] = useState([]);
+  const [epics, setEpics] = useState([]);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/activity?limit=3')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.posts) setActivity(data.posts); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/epics?board=true')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (Array.isArray(data)) setEpics(data); })
+      .catch(() => {});
+  }, []);
+
   // Build a quick status lookup: botApiName → status
   const statusByName = Object.fromEntries(
     displayBots.map((b) => [b.name, b.status])
   );
 
+  // Mobile: render 7-section document-flow layout
+  if (isMobile) {
+    return (
+      <MobileLayout
+        statusByName={statusByName}
+        epics={epics}
+        activity={activity}
+      />
+    );
+  }
+
+  // Desktop: render existing room layout unchanged
   return (
     <div className="hq-scene" role="main" aria-label="Bot Fleet Inc Headquarters">
 
