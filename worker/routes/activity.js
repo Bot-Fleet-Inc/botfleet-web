@@ -74,5 +74,41 @@ export const handlePostActivity = wrapRoute(async (request, env) => {
   const updated  = [post, ...existing].slice(0, MAX_STORE);
   await kv.put(FEED_KEY, JSON.stringify(updated));
 
+  // Write dispatch wake signal for issue closed or PR merged
+  // dispatch-bot polls this key in its cron sweep and wakes immediately if set.
+  // TTL: 300s — signal is consumed or expires; never blocks the activity response.
+  try {
+    const isIssueClosed  = event === 'issues' && payload.action === 'closed';
+    const isPrMerged     = event === 'pull_request' &&
+                           payload.action === 'closed' &&
+                           payload.pull_request?.merged === true;
+
+    if (isIssueClosed || isPrMerged) {
+      const wakePayload = isPrMerged
+        ? {
+            event,
+            repo:   payload.repository?.full_name,
+            pr:     payload.pull_request?.number,
+            title:  payload.pull_request?.title,
+            closer: payload.sender?.login,
+            ts:     Date.now(),
+          }
+        : {
+            event,
+            repo:   payload.repository?.full_name,
+            issue:  payload.issue?.number,
+            title:  payload.issue?.title,
+            closer: payload.sender?.login,
+            ts:     Date.now(),
+          };
+
+      await kv.put('dispatch:wake:pending', JSON.stringify(wakePayload), {
+        expirationTtl: 300,
+      });
+    }
+  } catch (_err) {
+    // KV wake signal failure must never drop the activity event
+  }
+
   return jsonOk({ ok: true, id: post.id }, request);
 });
