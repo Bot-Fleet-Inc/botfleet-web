@@ -405,10 +405,13 @@ export function HQRoom() {
       {/* ▶ CHALKBOARD — "Autonom. Omtrent._" on the wall, not external UI */}
       <Chalkboard />
 
-      {/* Whiteboard — live Kanban board (WEB-11) */}
-      <div className="hq-whiteboard" aria-label="Project board">
-        <WallKanban />
-      </div>
+      {/* Whiteboard — small wall indicator; full Kanban is below the room */}
+      <a className="hq-kanban-indicator" href="#project-board" aria-label="Se prosjektboard">
+        <span className="hq-kanban-indicator__dot" style={{background:'#4ECDC4'}} />
+        <span className="hq-kanban-indicator__dot" style={{background:'#FFB347'}} />
+        <span className="hq-kanban-indicator__dot" style={{background:'#FF6B8A'}} />
+        <span className="hq-kanban-indicator__label">BOARD ↓</span>
+      </a>
 
       {/* Standup table */}
       <div className="hq-standup-table" aria-hidden="true" />
