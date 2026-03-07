@@ -905,3 +905,69 @@
   .hq-notice-board { width: 168px; }
   .hq-lounge-cta__btn { font-size: 7px; padding: 6px 10px; }
 }
+
+/* ── Ledige stillinger — wall sticky note (WEB-17) ─────────────── */
+.hq-ledige-stillinger {
+  position: absolute;
+  top: 72px;
+  right: 35%;
+  width: 148px;
+  background: #F5F0C0;
+  border: 2px solid #D4C840;
+  padding: 8px 10px 10px;
+  z-index: 10;
+  image-rendering: pixelated;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  transform: rotate(-1.5deg);
+}
+.hq-ledige__pin {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background: #CC3333;
+  border-radius: 50%;
+  border: 2px solid #882222;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.hq-ledige__header {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5.5px;
+  color: #2A2A1A;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #C8B800;
+  padding-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+.hq-ledige__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin-bottom: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  color: #1A1A0A;
+  line-height: 1.4;
+}
+.hq-ledige__emoji {
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.hq-ledige__text strong {
+  font-weight: 700;
+  display: block;
+}
+.hq-ledige__text em {
+  font-style: normal;
+  color: #555540;
+  font-size: 6px;
+}
+
+@media (max-width: 768px) {
+  .hq-ledige-stillinger {
+    display: none;
+  }
+}

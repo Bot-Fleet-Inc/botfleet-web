@@ -51,16 +51,6 @@ const ZONE_POSITIONS = {
     standup:     { left: '40%' },
     lounge:      { left: '72%', bottom: '175px' },
   },
-  archi: {
-    workstation: { left: '34%' },
-    standup:     { left: '34%' },
-    lounge:      { left: '74%', bottom: '175px' },
-  },
-  infra: {
-    workstation: { left: '9%' },
-    standup:     { left: '28%' },
-    lounge:      { left: '62%', bottom: '175px' },
-  },
   audit: {
     // Audit is "planned" — defaults to lounge/observer position
     workstation: { left: '78%', bottom: '175px' },
@@ -122,34 +112,6 @@ const BOTS = [
       "> deploying. don't touch anything.",
     ],
     link: '/bots/coding-bot',
-  },
-  {
-    id: 'archi',
-    apiName: 'archi-bot',
-    key: 'archi',
-    displayName: 'Archi',
-    color: '#7BC67E',
-    defaultZone: 'standup',
-    bubbles: [
-      '> The diagram was correct.',
-      '> This is load-bearing whitespace.',
-      '> Per the spec...',
-    ],
-    link: '/bots/archi-bot',
-  },
-  {
-    id: 'infra',
-    apiName: 'infra-bot',
-    key: 'infra',
-    displayName: 'Infra',
-    color: '#C3A6D4',
-    defaultZone: 'workstation',
-    bubbles: [
-      '> uptime: 99.2%. close enough.',
-      '> the lights are blinking. that\'s fine.',
-      '> have you tried turning it off.',
-    ],
-    link: '/bots/infra-bot',
   },
   {
     id: 'audit',
@@ -455,6 +417,34 @@ export function HQRoom() {
 
       {/* Notice board (stats) */}
       <NoticeBoard stats={stats} />
+
+      {/* Ledige stillinger — wall notice (WEB-17) */}
+      <div className="hq-ledige-stillinger" aria-label="Ledige stillinger">
+        <div className="hq-ledige__pin" aria-hidden="true" />
+        <div className="hq-ledige__header">📋 Ledige stillinger</div>
+        <div className="hq-ledige__item">
+          <span className="hq-ledige__emoji">🔧</span>
+          <span className="hq-ledige__text">
+            <strong>devops-bot</strong><br />
+            Infrastruktur-eier<br />
+            <em>(Proxmox · CF · UniFi)</em>
+          </span>
+        </div>
+        <div className="hq-ledige__item">
+          <span className="hq-ledige__emoji">🏛️</span>
+          <span className="hq-ledige__text">
+            <strong>archi-bot</strong><br />
+            Enterprise-arkitekt
+          </span>
+        </div>
+        <div className="hq-ledige__item">
+          <span className="hq-ledige__emoji">💼</span>
+          <span className="hq-ledige__text">
+            <strong>crm-bot</strong><br />
+            Kundeansvarlig
+          </span>
+        </div>
+      </div>
 
       {/* ═══ ZONE 3 — LOUNGE ═══ */}
 
