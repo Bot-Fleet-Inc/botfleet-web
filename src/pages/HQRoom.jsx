@@ -19,6 +19,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFleet, STATIC_FLEET } from '../hooks/useFleet.js';
+import { FleetLogoWallpaper } from '../components/FleetLogoWallpaper.jsx';
 import './HQRoom.css';
 
 // ── R2 sprite base ───────────────────────────────────────────────
@@ -415,6 +416,9 @@ export function HQRoom() {
 
       {/* ▶ LOGO SIGN — branding INSIDE the room on the back wall */}
       <LogoSign />
+
+      {/* ▶ FLEET LOGO WALLPAPER — interactive >_ pixel art poster (WEB-14) */}
+      <FleetLogoWallpaper className="hq-fleet-logo" />
 
       {/* ▶ CHALKBOARD — "Autonom. Omtrent._" on the wall, not external UI */}
       <Chalkboard />
