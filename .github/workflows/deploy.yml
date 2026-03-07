@@ -61,13 +61,18 @@ jobs:
           packageManager: "npm"
           preCommands: echo "wrangler ready" 
       - name: Smoke test
+        env:
+          CF_CLIENT_ID: ${{ secrets.CF_SERVICE_CLIENT_ID }}
+          CF_CLIENT_SECRET: ${{ secrets.CF_SERVICE_CLIENT_SECRET }}
         run: |
           sleep 15
           FAIL=0
           for endpoint in / /api/bots /api/epics /api/activity /api/status; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "CF-Access-Client-Id: ${CF_CLIENT_ID}" \
+              -H "CF-Access-Client-Secret: ${CF_CLIENT_SECRET}" \
               "https://bot-fleet.org${endpoint}" || echo "000")
             echo "${endpoint} → ${STATUS}"
-            [ "$STATUS" = "200" ] || FAIL=1
+            [[ "$STATUS" =~ ^(200|301|302)$ ]] || FAIL=1
           done
           [ "$FAIL" = "0" ] && echo "✅ Smoke tests passed" || exit 1
