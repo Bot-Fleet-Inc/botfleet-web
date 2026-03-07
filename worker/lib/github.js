@@ -168,6 +168,135 @@ export async function fetchEpics(token) {
 }
 
 // ---------------------------------------------------------------------------
+// Board epics (GitHub Projects v2 — WEB-11 Wall Kanban)
+// ---------------------------------------------------------------------------
+
+const PROJECT_BOARD_ID = 'PVT_kwDOD8mCJs4BQ1x1';
+
+const BOARD_EPICS_QUERY = `
+query BoardEpics($projectId: ID!, $after: String) {
+  node(id: $projectId) {
+    ... on ProjectV2 {
+      items(first: 100, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          id
+          content {
+            ... on Issue {
+              number
+              title
+              url
+              state
+              updatedAt
+              repository { nameWithOwner }
+              labels(first: 10) { nodes { name color } }
+              assignees(first: 5) { nodes { login } }
+            }
+          }
+          fieldValues(first: 20) {
+            nodes {
+              ... on ProjectV2ItemFieldSingleSelectValue {
+                name
+                field { ... on ProjectV2SingleSelectField { name } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+/** Map project board status field values to canonical Kanban columns. */
+function mapBoardStatus(rawStatus) {
+  if (!rawStatus) return 'Planned';
+  const s = rawStatus.toLowerCase().trim();
+  if (s.includes('progress') || s.includes('in-progress') || s === 'wip') return 'In Progress';
+  if (s.includes('block')) return 'Blocked';
+  if (s.includes('done') || s.includes('complete') || s.includes('closed')) return 'Done';
+  if (s.includes('plan') || s.includes('backlog') || s.includes('todo')) return 'Planned';
+  return 'Planned';
+}
+
+/** Derive status from issue labels as fallback. */
+function deriveStatusFromLabels(labels) {
+  const names = labels.map((l) => l.name.toLowerCase());
+  if (names.some((n) => n.includes('blocked'))) return 'Blocked';
+  if (names.some((n) => n.includes('in-progress') || n.includes('in progress'))) return 'In Progress';
+  if (names.some((n) => n.includes('done') || n.includes('closed'))) return 'Done';
+  return 'Planned';
+}
+
+/**
+ * Fetch epics from GitHub Projects v2 board with Kanban status.
+ * Filters to items labelled 'type:epic' or titled with [EPIC].
+ * Falls back to REST if GraphQL fails.
+ */
+export async function fetchEpicsWithBoardStatus(token) {
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    'User-Agent': 'botfleet-web/1.0',
+  };
+
+  const items = [];
+  let after = null;
+  let hasNextPage = true;
+
+  // Paginate through all board items
+  while (hasNextPage) {
+    const data = await graphql(BOARD_EPICS_QUERY, { projectId: PROJECT_BOARD_ID, after }, token);
+    const project = data?.node;
+    if (!project) throw new Error('Project board not found');
+
+    const page = project.items;
+    hasNextPage = page.pageInfo.hasNextPage;
+    after = page.pageInfo.endCursor;
+
+    for (const item of page.nodes) {
+      const issue = item.content;
+      if (!issue || issue.__typename === undefined) continue;
+
+      const labels = (issue.labels?.nodes ?? []).map((l) => ({ name: l.name, color: l.color }));
+      const labelNames = labels.map((l) => l.name.toLowerCase());
+
+      // Filter: must be type:epic labelled OR title starts with [EPIC]
+      const isEpic = labelNames.some((n) => n === 'type:epic') ||
+                     issue.title?.toLowerCase().startsWith('[epic]');
+      if (!isEpic) continue;
+
+      // Extract status from field values
+      const statusField = (item.fieldValues?.nodes ?? []).find(
+        (fv) => fv?.field?.name?.toLowerCase() === 'status' && fv?.name
+      );
+      const rawStatus = statusField?.name ?? null;
+
+      // Also check blocked label
+      const isBlocked = labelNames.some((n) => n.includes('blocked'));
+      let status = rawStatus ? mapBoardStatus(rawStatus) : deriveStatusFromLabels(labels);
+      if (isBlocked) status = 'Blocked';
+
+      items.push({
+        id: item.id,
+        number: issue.number,
+        title: issue.title,
+        url: issue.url,
+        status,
+        state: issue.state,
+        labels,
+        assignees: (issue.assignees?.nodes ?? []).map((a) => a.login),
+        updatedAt: issue.updatedAt,
+        repo: issue.repository?.nameWithOwner ?? `${ORG}/${CONTINUUM_REPO}`,
+      });
+    }
+
+    if (!after) break;
+  }
+
+  return items;
+}
+
+// ---------------------------------------------------------------------------
 // Recent org activity (for /api/activity seed from GitHub)
 // ---------------------------------------------------------------------------
 
